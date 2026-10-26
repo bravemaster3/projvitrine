@@ -56,9 +56,16 @@ def _apply_authors(project, users, unknown):
         CoauthorInvite.objects.get_or_create(project=project, github_username=name)
 
 
+NULLABLE_DATES = ("period_start", "period_end")
+
+
 def _project_data(request):
     """Plain dict of the writable fields, plus the uploaded image if there is one."""
     data = {field: request.data[field] for field in WRITABLE_FIELDS if field in request.data}
+    # A form sends an empty date as "", which means "no date" (e.g. an ongoing project).
+    for field in NULLABLE_DATES:
+        if data.get(field) == "":
+            data[field] = None
     if "imgFile" in request.FILES:
         data["imgFile"] = request.FILES["imgFile"]
     return data
