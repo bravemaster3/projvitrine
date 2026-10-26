@@ -37,7 +37,7 @@ registries*) with a GitHub token that has `read:packages`.
 ## 1. Create the resource
 
 1. Coolify → your project → *New resource* → *Public repository*:
-   `https://github.com/bravemaster3/alx-hall-of-fame`, branch `main`.
+   `https://github.com/bravemaster3/proofolio`, branch `main`.
 2. Build pack **Docker Compose**, compose file `/docker-compose.coolify.yaml`.
 3. *Domains* for `proofolio-web`:
    `https://proofolio.kndev.org:8080,https://alxhof.kndev.org:8080`
