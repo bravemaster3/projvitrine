@@ -30,8 +30,8 @@ https://claude.ai/artifact/1mVPeeV5gfy5bDUCn96vJR
 | UI stack | Tailwind + CSS-variable tokens + Radix primitives; MUI removed | decided |
 | Languages | EN, FR, SV at launch; list configurable | decided |
 | GitHub access | Login: `read:user user:email`. Private repos: optional GitHub App, read-only, per-repo | decided |
-| Product name | **Proofolio** (env `VITE_BRAND_NAME`) | decided |
-| Domain / permalink | `proofolio.kndev.org/u/<handle>`; alxhof.kndev.org redirects | decided |
+| Product name | **ProjVitrine** (env `VITE_BRAND_NAME`) | decided |
+| Domain / permalink | `projvitrine.kndev.org/u/<handle>`; alxhof.kndev.org redirects | decided |
 | Extra login providers | email magic link + Google | proposed |
 
 ## Phase 0 — Safeguard the live data
@@ -235,8 +235,8 @@ backup restore has been tested.
 | `GITHUB_APP_ID`, `GITHUB_APP_PRIVATE_KEY` | backend (private repos) | — |
 | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | backend | — |
 | `EMAIL_URL` | backend (magic links) | — |
-| `SITE_URL` | backend + web container | `https://proofolio.kndev.org` |
-| `VITE_BRAND_NAME` | web container (runtime) | `Proofolio` |
+| `SITE_URL` | backend + web container | `https://projvitrine.kndev.org` |
+| `VITE_BRAND_NAME` | web container (runtime) | `ProjVitrine` |
 | `LANGS` | backend + web container | `en,fr,sv` |
 | `VITE_GITHUB_CLIENT_ID` | web container (runtime) | — |
-| `CANONICAL_HOST` | web container | `proofolio.kndev.org` |
+| `CANONICAL_HOST` | web container | `projvitrine.kndev.org` |

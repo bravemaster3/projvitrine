@@ -55,7 +55,7 @@ SITE_URL = (
 ).rstrip("/")
 
 # Product name used in link previews (same variable as the frontend build).
-BRAND_NAME = env_str("VITE_BRAND_NAME", env_str("BRAND_NAME", "Proofolio"))
+BRAND_NAME = env_str("VITE_BRAND_NAME", env_str("BRAND_NAME", "ProjVitrine"))
 # Where Django fetches the built index.html to add link-preview tags for /u/* pages.
 INDEX_HTML_URL = env_str("INDEX_HTML_URL", "http://web:8080/index.html")
 
@@ -64,9 +64,9 @@ LANGS = env_list("LANGS", env_list("VITE_LANGS", ["en", "fr", "sv"]))
 DEFAULT_LANG = env_str("DEFAULT_LANG", env_str("VITE_DEFAULT_LANG", LANGS[0]))
 
 _site_host = urlparse(SITE_URL).hostname or "localhost"
-# "backend" / "proofolio-backend" are the service names other containers use to reach Django.
+# "backend" / "projvitrine-backend" are the service names other containers use to reach Django.
 ALLOWED_HOSTS = env_list(
-    "ALLOWED_HOSTS", sorted({_site_host, "localhost", "127.0.0.1", "backend", "proofolio-backend"})
+    "ALLOWED_HOSTS", sorted({_site_host, "localhost", "127.0.0.1", "backend", "projvitrine-backend"})
 )
 CSRF_TRUSTED_ORIGINS = env_list("CSRF_TRUSTED_ORIGINS", [f"https://{_site_host}", f"http://{_site_host}"])
 

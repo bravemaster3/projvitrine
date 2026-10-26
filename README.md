@@ -1,10 +1,10 @@
-# Proofolio
+# ProjVitrine
 
 Portfolios that show the work: add your projects once, tell the story behind
 each one, and share a single permanent link — on your CV, LinkedIn, in an email
 or on paper.
 
-**Live:** https://proofolio.kndev.org · formerly the ALX Hall of Fame
+**Live:** https://projvitrine.kndev.org · formerly the ALX Hall of Fame
 (alxhof.kndev.org redirects here; ALX members keep their community badge).
 
 - **Portfolio page** at `/u/<handle>` with headline, links (GitHub, LinkedIn,
