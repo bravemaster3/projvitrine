@@ -104,7 +104,7 @@ jobs:
           # the backend fetches index.html from the web container by its service name: no redirect
           docker exec projvitrine-backend python -c "import urllib.request; assert urllib.request.urlopen('http://projvitrine-web:8080/index.html').status == 200"
           # link-preview tags for a real portfolio page
-          docker exec projvitrine-backend python manage.py shell -c "from django.contrib.auth.models import User; from backend.models import Profile; u = User.objects.create(username='smoke'); Profile.objects.create(user=u, full_name='Smoke Test', headline='Tester')"
+          docker exec -u app projvitrine-backend python manage.py shell -c "from django.contrib.auth.models import User; from backend.models import Profile; u = User.objects.create(username='smoke'); Profile.objects.create(user=u, full_name='Smoke Test', headline='Tester')"
           curl -fs -H "$H" http://127.0.0.1:8080/u/smoke | grep -q '<title>Smoke Test · Tester</title>'
           test "$(curl -s -o /dev/null -w '%{http_code} %{redirect_url}' -H 'Host: alxhof.kndev.org' http://127.0.0.1:8080/u/x)" = "301 https://projvitrine.example/u/x"
           # unknown portfolio: Django 404s, nginx falls back to the app shell
