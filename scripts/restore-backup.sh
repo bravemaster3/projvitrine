@@ -74,7 +74,9 @@ done
 docker exec "$BACKEND" python manage.py showmigrations backend projects | tail -n 12
 
 echo "3/4 Restoring media files"
-docker exec -i "$BACKEND" tar xzf - -C /usr/src/app < "$BACKUP/media.tgz"
+# As root, then hand the files to the app user (the volume may be root-owned).
+docker exec -u 0 -i "$BACKEND" tar xzf - -C /usr/src/app --no-same-owner < "$BACKUP/media.tgz"
+docker exec -u 0 "$BACKEND" chown -R app:app /usr/src/app/media
 
 echo "4/4 Comparing row counts with the backup"
 docker exec "$DB" sh -c 'psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -At -c "

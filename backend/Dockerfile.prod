@@ -14,7 +14,8 @@ RUN chmod +x entrypoint.sh \
     && useradd --create-home app \
     && mkdir -p media static \
     && chown -R app:app /usr/src/app
-USER app
+# The entrypoint starts as root only to fix the media volume's ownership, then
+# drops to the unprivileged `app` user before running anything else.
 
 EXPOSE 8000
 ENTRYPOINT ["./entrypoint.sh"]
