@@ -68,7 +68,7 @@
     "cta": "Start with GitHub",
     "points": {
       "permalink": { "title": "One permanent link", "body": "Your portfolio lives at a short address with a QR code, ready for CVs and slides." },
-      "caseStudies": { "title": "Case studies, not just links", "body": "Each project gets its own page: role, period, stack, screenshots and the story in Markdown." },
+      "caseStudies": { "title": "The story behind each project", "body": "Each project gets its own page: role, period, stack, screenshots and the story in Markdown." },
       "languages": { "title": "In several languages", "body": "The site speaks English, French and Swedish, and you can translate your own texts." },
       "community": { "title": "Part of a community", "body": "Show which communities you belong to, find collaborators, and get inspired by others." }
     },
@@ -85,7 +85,7 @@
   },
   "editor": {
     "newTitle": "Add a project", "editTitle": "Edit project", "subtitle": "Fields marked as required are needed to publish.",
-    "tabs": { "details": "Details", "story": "Case study", "translations": "Translations" },
+    "tabs": { "details": "Details", "story": "Story", "translations": "Translations" },
     "importTitle": "Import from a public GitHub repository", "importSearch": "Search your repositories", "noRepos": "No repository matches",
     "title": "Title", "summary": "Short summary", "summaryHint": "One or two sentences shown on cards.",
     "tags": "Tags", "tagsHint": "Comma-separated, e.g. Python, Leaflet, Peatlands", "code": "Code repository (required)", "live": "Live site",
@@ -93,7 +93,7 @@
     "coauthors": "Co-authors", "coauthorsHint": "GitHub usernames, comma-separated. People who haven't joined yet get an invite.",
     "featured": "Feature on my portfolio", "featuredHint": "Featured projects are shown first, with a large card.",
     "role": "Your role", "rolePlaceholder": "e.g. Author & maintainer", "start": "Started", "end": "Ended", "endHint": "Leave empty if ongoing.",
-    "body": "Case study", "bodyHint": "Markdown: the problem, your approach, the outcome.", "preview": "Preview", "write": "Write", "nothing": "Nothing yet.",
+    "body": "The story behind the project", "bodyHint": "The problem, your approach, the outcome. Markdown supported.", "preview": "Preview", "write": "Write", "nothing": "Nothing yet.",
     "moreLinks": "More links", "linkKind": "Type", "addLink": "Add link", "linkError": "Check the links: each needs a valid URL.",
     "writtenIn": "Written in", "translationsHint": "Empty translations are skipped; visitors then see the original text.",
     "publish": "Publish", "created": "Project published", "saved": "Changes saved"
@@ -104,6 +104,7 @@
     "fullName": "Full name", "handle": "Portfolio address", "headline": "Headline", "headlineHint": "e.g. Full-stack geospatial developer",
     "bio": "About you", "location": "Country", "openToWork": "Open to collaborations", "openToWorkHint": "Shows a badge on your portfolio.",
     "links": "Links", "linksHint": "Only filled-in links are shown.",
+    "contact": "Get in touch", "contactHint": "Where the “Get in touch” button on your portfolio leads.", "contactEmail": "Public contact email", "contactEmailHint": "Shown only through the button, never as plain text. Your account email stays private.", "contactVia": "“Get in touch” leads to", "contactAuto": "Automatic (first available)", "contactMail": "Email", "contactNone": "Hide the button", "contactNotSet": "not set",
     "communities": "Communities", "communitiesHint": "Bootcamps, schools, employers or groups you belong to.",
     "community": "Community", "membershipLabel": "Detail", "membershipPlaceholder": "e.g. Cohort 16", "addCommunity": "Add community",
     "languages": "Languages", "languagesHint": "Write in one language and optionally translate your headline and bio.", "writeIn": "I write in",

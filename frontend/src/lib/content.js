@@ -9,6 +9,12 @@ export const mediaUrl = (path) => {
 
 export const displayName = (user) => user?.full_name?.trim() || user?.username || ""
 
+/** Decode the public contact email (reversed + base64 so scrapers don't see it). */
+export const decodeContactEmail = (code) => {
+  const bytes = Uint8Array.from(atob(code), (c) => c.charCodeAt(0))
+  return [...new TextDecoder().decode(bytes)].reverse().join("")
+}
+
 /** Pending co-author invites, minus people already listed as authors. */
 export const pendingInvites = (project) => {
   const usernames = new Set((project?.users || []).map((u) => u.username?.toLowerCase()))

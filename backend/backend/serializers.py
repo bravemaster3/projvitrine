@@ -4,7 +4,7 @@ from django.core.exceptions import ValidationError as DjangoValidationError
 from django.db import transaction
 from rest_framework import serializers
 
-from .models import Community, Membership, Profile, ProfileTranslation
+from .models import CONTACT_CHOICES, Community, Membership, Profile, ProfileTranslation
 
 LEGACY_PROFILE_FIELDS = [
     "full_name", "location", "cohort", "bio", "facebook", "twitter", "linkedin", "avatar", "updated",
@@ -16,7 +16,7 @@ EMPTY_PROFILE = {
     "full_name": "", "location": "", "cohort": "", "bio": "",
     "facebook": None, "twitter": None, "linkedin": None, "avatar": None, "updated": False,
     "handle": None, "headline": "", "website": "", "orcid": "", "scholar": "",
-    "open_to_work": False, "default_lang": "", "memberships": [], "translations": {},
+    "open_to_work": False, "default_lang": "", "memberships": [], "translations": {}, "contact": None,
 }
 
 
@@ -74,13 +74,17 @@ class PublicUserSerializer(serializers.ModelSerializer):
     default_lang = serializers.CharField(source="profile.default_lang", read_only=True)
     memberships = MembershipSerializer(many=True, read_only=True)
     translations = serializers.SerializerMethodField()
+    contact = serializers.SerializerMethodField()
 
     class Meta:
         model = User
-        fields = ["id", "username", *PROFILE_FIELDS, "memberships", "translations"]
+        fields = ["id", "username", *PROFILE_FIELDS, "memberships", "translations", "contact"]
 
     def get_translations(self, user):
         return translations_dict(user.profile)
+
+    def get_contact(self, user):
+        return user.profile.contact()
 
     def to_representation(self, instance):
         if not hasattr(instance, "profile"):
@@ -119,12 +123,18 @@ class UserSerializer(serializers.ModelSerializer):
     scholar = serializers.URLField(source="profile.scholar", required=False, allow_blank=True)
     open_to_work = serializers.BooleanField(source="profile.open_to_work", required=False)
     default_lang = serializers.CharField(source="profile.default_lang", required=False)
+    contact_email = serializers.EmailField(source="profile.contact_email", required=False, allow_blank=True)
+    contact_via = serializers.ChoiceField(
+        source="profile.contact_via", choices=CONTACT_CHOICES, required=False, allow_blank=True
+    )
     memberships = MembershipSerializer(many=True, required=False)
     translations = serializers.JSONField(required=False)
 
     class Meta:
         model = User
-        fields = ["id", "username", "email", *PROFILE_FIELDS, "memberships", "translations"]
+        fields = [
+            "id", "username", "email", *PROFILE_FIELDS, "contact_email", "contact_via", "memberships", "translations",
+        ]
         read_only_fields = ["id", "username"]
 
     def to_internal_value(self, data):

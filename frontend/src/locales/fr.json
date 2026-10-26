@@ -68,7 +68,7 @@
     "cta": "Commencer avec GitHub",
     "points": {
       "permalink": { "title": "Un lien permanent", "body": "Votre portfolio a une adresse courte et un QR code, prêts pour vos CV et présentations." },
-      "caseStudies": { "title": "Des études de cas, pas seulement des liens", "body": "Chaque projet a sa page : rôle, période, technologies, captures d’écran et récit en Markdown." },
+      "caseStudies": { "title": "L’histoire derrière chaque projet", "body": "Chaque projet a sa page : rôle, période, technologies, captures d’écran et récit en Markdown." },
       "languages": { "title": "En plusieurs langues", "body": "Le site parle anglais, français et suédois, et vous pouvez traduire vos propres textes." },
       "community": { "title": "Au sein d’une communauté", "body": "Montrez vos communautés, trouvez des collaborateurs et inspirez-vous des autres." }
     },
@@ -85,7 +85,7 @@
   },
   "editor": {
     "newTitle": "Ajouter un projet", "editTitle": "Modifier le projet", "subtitle": "Les champs obligatoires sont nécessaires pour publier.",
-    "tabs": { "details": "Détails", "story": "Étude de cas", "translations": "Traductions" },
+    "tabs": { "details": "Détails", "story": "Récit", "translations": "Traductions" },
     "importTitle": "Importer depuis un dépôt GitHub public", "importSearch": "Rechercher vos dépôts", "noRepos": "Aucun dépôt ne correspond",
     "title": "Titre", "summary": "Résumé court", "summaryHint": "Une ou deux phrases affichées sur les cartes.",
     "tags": "Tags", "tagsHint": "Séparés par des virgules, ex. Python, Leaflet, Tourbières", "code": "Dépôt de code (obligatoire)", "live": "Site en ligne",
@@ -93,7 +93,7 @@
     "coauthors": "Co-auteurs", "coauthorsHint": "Noms d’utilisateur GitHub, séparés par des virgules. Les personnes pas encore inscrites reçoivent une invitation.",
     "featured": "Mettre en avant sur mon portfolio", "featuredHint": "Les projets mis en avant apparaissent en premier, en grand format.",
     "role": "Votre rôle", "rolePlaceholder": "ex. Auteur et mainteneur", "start": "Début", "end": "Fin", "endHint": "Laisser vide si en cours.",
-    "body": "Étude de cas", "bodyHint": "Markdown : le problème, votre approche, le résultat.", "preview": "Aperçu", "write": "Écrire", "nothing": "Rien pour l’instant.",
+    "body": "L’histoire du projet", "bodyHint": "Le problème, votre approche, le résultat. Markdown accepté.", "preview": "Aperçu", "write": "Écrire", "nothing": "Rien pour l’instant.",
     "moreLinks": "Autres liens", "linkKind": "Type", "addLink": "Ajouter un lien", "linkError": "Vérifiez les liens : chacun doit avoir une URL valide.",
     "writtenIn": "Rédigé en", "translationsHint": "Les traductions vides sont ignorées ; les visiteurs voient alors le texte d’origine.",
     "publish": "Publier", "created": "Projet publié", "saved": "Modifications enregistrées"
@@ -104,6 +104,7 @@
     "fullName": "Nom complet", "handle": "Adresse du portfolio", "headline": "Titre", "headlineHint": "ex. Développeur géospatial full-stack",
     "bio": "À propos de vous", "location": "Pays", "openToWork": "Ouvert aux collaborations", "openToWorkHint": "Affiche un badge sur votre portfolio.",
     "links": "Liens", "linksHint": "Seuls les liens renseignés sont affichés.",
+    "contact": "Me contacter", "contactHint": "Où mène le bouton « Me contacter » de votre portfolio.", "contactEmail": "E-mail de contact public", "contactEmailHint": "Utilisé uniquement via le bouton, jamais affiché en clair. L’e-mail de votre compte reste privé.", "contactVia": "« Me contacter » mène vers", "contactAuto": "Automatique (le premier disponible)", "contactMail": "E-mail", "contactNone": "Masquer le bouton", "contactNotSet": "non renseigné",
     "communities": "Communautés", "communitiesHint": "Bootcamps, écoles, employeurs ou groupes dont vous faites partie.",
     "community": "Communauté", "membershipLabel": "Précision", "membershipPlaceholder": "ex. Cohorte 16", "addCommunity": "Ajouter une communauté",
     "languages": "Langues", "languagesHint": "Écrivez dans une langue et traduisez éventuellement votre titre et votre présentation.", "writeIn": "J’écris en",

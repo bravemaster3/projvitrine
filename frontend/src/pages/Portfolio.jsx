@@ -6,7 +6,7 @@ import { Copy, Download, Globe, GraduationCap, Mail, MapPin, X as Close } from "
 import config from "../config"
 import api from "../lib/api"
 import { useAuth } from "../lib/auth"
-import { displayName, hasTag, localizeProfile, portfolioPath, skillsFrom } from "../lib/content"
+import { decodeContactEmail, displayName, hasTag, localizeProfile, portfolioPath, skillsFrom } from "../lib/content"
 import useApi from "../lib/useApi"
 import useDocumentTitle from "../lib/useDocumentTitle"
 import { FeaturedProject, ProjectCard, ProjectRow } from "../components/projects/ProjectCards"
@@ -33,6 +33,37 @@ export function profileLinks(user, t) {
     },
   ]
   return links.filter(Boolean)
+}
+
+/** "Get in touch", leading wherever the owner chose (email, LinkedIn, website, GitHub). */
+function ContactButton({ contact, size }) {
+  const { t } = useTranslation()
+  if (!contact) return null
+  const icon =
+    contact.via === "mail" ? (
+      <Mail className="size-4" aria-hidden />
+    ) : contact.via === "website" ? (
+      <Globe className="size-4" aria-hidden />
+    ) : (
+      <BrandIcon name={contact.via} />
+    )
+  if (contact.via === "mail") {
+    const openMail = () => {
+      window.location.href = `mailto:${decodeContactEmail(contact.code)}`
+    }
+    return (
+      <Button size={size} onClick={openMail} className="no-print">
+        {icon}
+        {t("portfolio.getInTouch")}
+      </Button>
+    )
+  }
+  return (
+    <Button href={contact.href} size={size} className="no-print">
+      {icon}
+      {t("portfolio.getInTouch")}
+    </Button>
+  )
 }
 
 function PermalinkCard({ url, stats }) {
@@ -99,7 +130,6 @@ export default function Portfolio() {
   coauthors.delete(user.username)
   const permalink = `${config.siteUrl}${portfolioPath(user)}`
   const isMe = me?.username === user.username
-  const contactLink = user.linkedin || user.website || `https://github.com/${user.username}`
 
   return (
     <div className="container-page flex flex-col gap-16 py-12 sm:py-14">
@@ -134,9 +164,7 @@ export default function Portfolio() {
             <p className="text-xs text-muted">{t("common.originalLanguage")}</p>
           )}
           <div className="flex flex-wrap gap-2.5 pt-1">
-            <Button href={contactLink} icon={Mail} className="no-print">
-              {t("portfolio.getInTouch")}
-            </Button>
+            <ContactButton contact={user.contact} />
             {links.map((link) => (
               <Button key={link.label} href={link.href} variant="secondary" data-print-url>
                 {link.icon}
@@ -240,24 +268,30 @@ export default function Portfolio() {
         </>
       )}
 
-      {/* Contact */}
-      <section
-        id="contact"
-        className="flex flex-wrap items-center justify-between gap-6 rounded-card border border-accent-border bg-accent-soft p-8 sm:p-10"
-      >
-        <div className="flex flex-[1_1_400px] flex-col gap-1.5">
-          <h2 className="text-[28px] font-bold tracking-tight">{t("portfolio.ctaTitle")}</h2>
-          <p className="text-muted">{t("portfolio.ctaBody", { name: displayName(user).split(" ")[0] })}</p>
-        </div>
-        <div className="no-print flex flex-wrap gap-2.5">
-          <Button href={contactLink} size="lg" icon={Mail}>
-            {t("portfolio.getInTouch")}
-          </Button>
-          <Button variant="secondary" size="lg" icon={Download} onClick={() => window.print()}>
+      {/* Contact (only when the owner offers a way to get in touch) */}
+      {user.contact ? (
+        <section
+          id="contact"
+          className="flex flex-wrap items-center justify-between gap-6 rounded-card border border-accent-border bg-accent-soft p-8 sm:p-10"
+        >
+          <div className="flex flex-[1_1_400px] flex-col gap-1.5">
+            <h2 className="text-[28px] font-bold tracking-tight">{t("portfolio.ctaTitle")}</h2>
+            <p className="text-muted">{t("portfolio.ctaBody", { name: displayName(user).split(" ")[0] })}</p>
+          </div>
+          <div className="no-print flex flex-wrap gap-2.5">
+            <ContactButton contact={user.contact} size="lg" />
+            <Button variant="secondary" size="lg" icon={Download} onClick={() => window.print()}>
+              {t("portfolio.downloadPdf")}
+            </Button>
+          </div>
+        </section>
+      ) : (
+        <div className="no-print flex justify-end">
+          <Button variant="secondary" icon={Download} onClick={() => window.print()}>
             {t("portfolio.downloadPdf")}
           </Button>
         </div>
-      </section>
+      )}
     </div>
   )
 }

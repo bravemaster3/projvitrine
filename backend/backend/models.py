@@ -1,3 +1,5 @@
+import base64
+
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
@@ -20,6 +22,17 @@ RESERVED_HANDLES = {
 def validate_handle(value):
     if value in RESERVED_HANDLES:
         raise ValidationError(f"“{value}” is reserved.")
+
+
+CONTACT_CHOICES = [
+    ("", "Automatic"),
+    ("mail", "Email"),
+    ("linkedin", "LinkedIn"),
+    ("website", "Website"),
+    ("github", "GitHub"),
+    ("none", "Hidden"),
+]
+CONTACT_ORDER = ["mail", "linkedin", "website", "github"]
 
 
 class Profile(models.Model):
@@ -46,6 +59,13 @@ class Profile(models.Model):
     scholar = models.URLField(max_length=200, blank=True, default="")
     open_to_work = models.BooleanField(default=False)
     default_lang = models.CharField(max_length=8, default="en", help_text="Language the user writes in.")
+    contact_email = models.EmailField(
+        blank=True, default="", help_text="Public contact address (the account email stays private)."
+    )
+    contact_via = models.CharField(
+        max_length=10, choices=CONTACT_CHOICES, blank=True, default="",
+        help_text="Where 'Get in touch' leads. Empty: the first available of email, LinkedIn, website, GitHub.",
+    )
 
     class Meta:
         constraints = [
@@ -54,6 +74,25 @@ class Profile(models.Model):
 
     def __str__(self):
         return self.user.username
+
+    def contact(self):
+        """The public 'Get in touch' target, or None when hidden.
+
+        The email is reversed and base64-encoded so it does not appear in plain
+        text for scrapers; the page decodes it only when the button is clicked.
+        """
+        if self.contact_via == "none":
+            return None
+        targets = {
+            "mail": self.contact_email,
+            "linkedin": self.linkedin,
+            "website": self.website,
+            "github": f"https://github.com/{self.user.username}",
+        }
+        via = self.contact_via if targets.get(self.contact_via) else next(k for k in CONTACT_ORDER if targets[k])
+        if via == "mail":
+            return {"via": via, "code": base64.b64encode(targets[via][::-1].encode()).decode()}
+        return {"via": via, "href": targets[via]}
 
     def save(self, *args, **kwargs):
         if not self.handle:

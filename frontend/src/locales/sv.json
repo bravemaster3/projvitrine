@@ -68,7 +68,7 @@
     "cta": "Börja med GitHub",
     "points": {
       "permalink": { "title": "En permanent länk", "body": "Din portfolio får en kort adress och en QR-kod, redo för CV och presentationer." },
-      "caseStudies": { "title": "Fallstudier, inte bara länkar", "body": "Varje projekt får en egen sida: roll, period, teknik, skärmbilder och berättelsen i Markdown." },
+      "caseStudies": { "title": "Berättelsen bakom varje projekt", "body": "Varje projekt får en egen sida: roll, period, teknik, skärmbilder och berättelsen i Markdown." },
       "languages": { "title": "På flera språk", "body": "Webbplatsen finns på engelska, franska och svenska, och du kan översätta dina egna texter." },
       "community": { "title": "En del av en community", "body": "Visa vilka communities du tillhör, hitta samarbetspartner och inspireras av andra." }
     },
@@ -85,7 +85,7 @@
   },
   "editor": {
     "newTitle": "Lägg till projekt", "editTitle": "Redigera projekt", "subtitle": "Obligatoriska fält behövs för att publicera.",
-    "tabs": { "details": "Detaljer", "story": "Fallstudie", "translations": "Översättningar" },
+    "tabs": { "details": "Detaljer", "story": "Berättelse", "translations": "Översättningar" },
     "importTitle": "Importera från ett offentligt GitHub-repository", "importSearch": "Sök bland dina repositories", "noRepos": "Inget repository matchar",
     "title": "Titel", "summary": "Kort sammanfattning", "summaryHint": "En eller två meningar som visas på korten.",
     "tags": "Taggar", "tagsHint": "Kommaseparerade, t.ex. Python, Leaflet, Torvmarker", "code": "Kodrepository (obligatoriskt)", "live": "Webbplats",
@@ -93,7 +93,7 @@
     "coauthors": "Medförfattare", "coauthorsHint": "GitHub-användarnamn, kommaseparerade. Personer som inte gått med ännu får en inbjudan.",
     "featured": "Lyft fram i min portfolio", "featuredHint": "Utvalda projekt visas först, med ett stort kort.",
     "role": "Din roll", "rolePlaceholder": "t.ex. Upphovsperson och förvaltare", "start": "Startade", "end": "Avslutades", "endHint": "Lämna tomt om pågående.",
-    "body": "Fallstudie", "bodyHint": "Markdown: problemet, ditt angreppssätt, resultatet.", "preview": "Förhandsvisa", "write": "Skriv", "nothing": "Inget ännu.",
+    "body": "Berättelsen bakom projektet", "bodyHint": "Problemet, ditt angreppssätt, resultatet. Markdown stöds.", "preview": "Förhandsvisa", "write": "Skriv", "nothing": "Inget ännu.",
     "moreLinks": "Fler länkar", "linkKind": "Typ", "addLink": "Lägg till länk", "linkError": "Kontrollera länkarna: var och en behöver en giltig URL.",
     "writtenIn": "Skrivet på", "translationsHint": "Tomma översättningar hoppas över; besökare ser då originaltexten.",
     "publish": "Publicera", "created": "Projektet publicerades", "saved": "Ändringarna sparades"
@@ -104,6 +104,7 @@
     "fullName": "Fullständigt namn", "handle": "Portfolioadress", "headline": "Titel", "headlineHint": "t.ex. Fullstack-utvecklare inom geodata",
     "bio": "Om dig", "location": "Land", "openToWork": "Öppen för samarbeten", "openToWorkHint": "Visar ett märke i din portfolio.",
     "links": "Länkar", "linksHint": "Bara ifyllda länkar visas.",
+    "contact": "Kontakt", "contactHint": "Vart knappen ”Kontakta mig” på din portfolio leder.", "contactEmail": "Offentlig kontaktadress", "contactEmailHint": "Används bara via knappen och visas aldrig i klartext. Ditt kontos e-post förblir privat.", "contactVia": "”Kontakta mig” leder till", "contactAuto": "Automatiskt (första tillgängliga)", "contactMail": "E-post", "contactNone": "Dölj knappen", "contactNotSet": "inte ifyllt",
     "communities": "Communities", "communitiesHint": "Bootcamps, skolor, arbetsgivare eller grupper du tillhör.",
     "community": "Community", "membershipLabel": "Detalj", "membershipPlaceholder": "t.ex. Kohort 16", "addCommunity": "Lägg till community",
     "languages": "Språk", "languagesHint": "Skriv på ett språk och översätt gärna din titel och presentation.", "writeIn": "Jag skriver på",
