@@ -1,210 +1,153 @@
-from rest_framework_simplejwt.tokens import AccessToken
-from rest_framework_simplejwt.exceptions import TokenError
 from django.contrib.auth.models import User
-from .models import Project, Comment
-from .serializers import ProjectSerializer, CommentSerializer
-from rest_framework import viewsets, permissions, status
+from django.db.models import Q
+from django.shortcuts import get_object_or_404
+from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from django.db.models import Q
-import logging
-from django.shortcuts import get_object_or_404
+
+from .models import Comment, Project
+from .serializers import CommentSerializer, ProjectSerializer
+
+PUBLIC_ACTIONS = {"list", "retrieve", "user_projects"}
+WRITABLE_FIELDS = ["projectTitle", "authors", "description", "tags", "githubRepos", "liveProject"]
 
 
-logger = logging.getLogger(__name__)
+def _resolve_authors(owner, authors):
+    """Turn a comma-separated list of GitHub usernames into users, owner first.
+
+    Unknown usernames still get a placeholder account for now; phase 2 replaces
+    these with co-author invites.
+    """
+    usernames = []
+    for name in (authors or "").split(","):
+        name = name.strip().lower()
+        if name and name not in usernames:
+            usernames.append(name)
+    if owner.username not in usernames:
+        usernames.insert(0, owner.username)
+    users = [User.objects.get_or_create(username=name)[0] for name in usernames]
+    return ", ".join(usernames), users
+
+
+def _project_data(request):
+    """Plain dict of the writable fields, plus the uploaded image if there is one."""
+    data = {field: request.data[field] for field in WRITABLE_FIELDS if field in request.data}
+    if "imgFile" in request.FILES:
+        data["imgFile"] = request.FILES["imgFile"]
+    return data
+
 
 class ProjectViewSet(viewsets.ModelViewSet):
-    queryset = Project.objects.all()
     serializer_class = ProjectSerializer
-    # authentication_classes = [JWTAuthentication]
-    # permission_classes = [permissions.IsAuthenticated]
+    queryset = (
+        Project.objects.select_related("user__profile")
+        .prefetch_related("users__profile", "likes", "comments__user__profile")
+        .order_by("-id")
+    )
 
-    @action(detail=False, methods=['post'], permission_classes=[permissions.IsAuthenticated])
-    def create_with_token(self, request, *args, **kwargs):
-        auth_header = request.headers.get('Authorization')
+    def get_permissions(self):
+        if self.action in PUBLIC_ACTIONS:
+            return [permissions.AllowAny()]
+        return [permissions.IsAuthenticated()]
 
-        if not auth_header or not auth_header.startswith('Bearer '):
-            return Response({"error": "No access token provided"}, status=status.HTTP_400_BAD_REQUEST)
-
-        access_token_str = auth_header.split(' ')[1]
-
-        try:
-            access_token = AccessToken(access_token_str)
-            user_id = access_token['user_id']
-            user = User.objects.get(id=user_id)
-
-            if user.is_authenticated:
-                request.user = user  # Set the user in the request
-                request.data._mutable = True  # Allow modification of request data
-                request.data['user'] = user.id
-                request.data['users'] = user.id
-                request.data['authors'] = request.data['authors'].lower()
-                
-                # Parse the authors field and create/link users
-                authors = request.data.get('authors', '')
-                author_usernames = [username.strip().lower() for username in authors.split(',')]
-                author_users = []
-                
-                for username in author_usernames:
-                    if username:
-                        author_user, created = User.objects.get_or_create(username=username)
-                        author_users.append(author_user)
-                
-                if not user in author_users:
-                    request.data['authors'] = f"{user.username}, {request.data['authors']}"
-                    author_users.insert(0, user)
-                
-                # Serialize the project data
-                serializer = self.get_serializer(data=request.data, context={'request': request})
-                
-                if serializer.is_valid(raise_exception=True):
-                    project = serializer.save(user=user)
-                    # logger.info(f"Related users: {[user.username for user in project.users.all()]}")
-                    
-                    # Link project to author users
-                    project.users.add(*author_users)
-                    
-                    headers = self.get_success_headers(serializer.data)
-                    return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-                else:
-                    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-            else:
-                return Response({"error": "User is not authenticated"}, status=status.HTTP_401_UNAUTHORIZED)
-        except TokenError as e:
-            return Response({"error": f"Token error: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
-        except User.DoesNotExist:
-            return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
-        except Exception as e:
-            logger.error(f"An unexpected error occurred: {str(e)}")
-            return Response({"error": f"An error occurred: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+    def _forbid_unless_owner(self, project, verb):
+        if project.user_id != self.request.user.id:
+            return Response(
+                {"detail": f"You do not have permission to {verb} this project."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+        return None
 
     def create(self, request, *args, **kwargs):
-        # This method should not be called directly, instead use create_with_token
-        return Response({"error": "Use the create_with_token endpoint"}, status=status.HTTP_400_BAD_REQUEST)   
+        data = _project_data(request)
+        data["authors"], author_users = _resolve_authors(request.user, data.get("authors"))
+        serializer = self.get_serializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        project = serializer.save(user=request.user)
+        project.users.set(author_users)
+        return Response(self.get_serializer(project).data, status=status.HTTP_201_CREATED)
 
-    
-    def get_permissions(self):
-        if self.action in ['create_with_token', 'update', 'destroy']:  # Only allow POST method for creating new projects with token
-            return [permissions.IsAuthenticated()]
-        elif self.action in ['list', 'retrieve']:  # Allow GET method for listing and retrieving projects
-            return [permissions.AllowAny()]
-        return super(ProjectViewSet, self).get_permissions()
-    
-    # @action(detail=False, methods=['delete'], permission_classes=[permissions.IsAuthenticated])
-    def destroy(self, request, *args, **kwargs):
-        # Only allow DELETE if the user is authenticated
-        if not request.user.is_authenticated:
-            return Response({"detail": "Authentication credentials were not provided."}, status=status.HTTP_403_FORBIDDEN)
-        # Check if the user is the owner of the project
-        project = self.get_object()
-        if request.user != project.user:
-            return Response({"detail": "You do not have permission to delete this project."}, status=status.HTTP_403_FORBIDDEN)
-
-        # Delete the media file associated with the project
-        if project.imgFile and project.imgFile.name:
-            project.imgFile.delete(save=False)
-
-        return super(ProjectViewSet, self).destroy(request, *args, **kwargs)
+    @action(detail=False, methods=["post"])
+    def create_with_token(self, request, *args, **kwargs):
+        """Kept for the current frontend; same as POST /api/projects/."""
+        return self.create(request, *args, **kwargs)
 
     def update(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:
-            return Response({"detail": "Authentication credentials were not provided."}, status=status.HTTP_403_FORBIDDEN)
-
         project = self.get_object()
-        if request.user != project.user:
-            return Response({"detail": "You do not have permission to edit this project."}, status=status.HTTP_403_FORBIDDEN)
-        # Handle the imgFile field
-        img_file = request.FILES.get('imgFile')  # Get the uploaded file from request.FILES
-        request.data._mutable = True
-        # if img_file:
-        #     # If a new image file is provided, it will be handled automatically by the serializer
-        #     request.data['imgFile'] = img_file
-        if img_file:
-        # **New Change**: If a new image file is provided, delete the old one
-            if project.imgFile and hasattr(project.imgFile, 'path'):
-                # **New Change**: Delete the old image file
-                old_img_file = project.imgFile
-            # **New Change**: Set the new image file in request data
-            request.data['imgFile'] = img_file
+        denied = self._forbid_unless_owner(project, "edit")
+        if denied:
+            return denied
+
+        data = _project_data(request)
+        if "authors" in data:
+            data["authors"], author_users = _resolve_authors(request.user, data["authors"])
         else:
-            # Preserve the existing image if no new image file is provided
-            request.data['imgFile'] = project.imgFile  # Keep the old image if none is provided
+            author_users = None
 
-        # request.data._mutable = True
-        request.data['authors'] = request.data['authors'].lower()
+        old_image = project.imgFile.name if "imgFile" in data and project.imgFile else None
+        serializer = self.get_serializer(project, data=data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        project = serializer.save()
+        if author_users is not None:
+            project.users.set(author_users)
+        if old_image and old_image != project.imgFile.name:
+            project.imgFile.storage.delete(old_image)
+        return Response(self.get_serializer(project).data)
 
-        authors = request.data.get('authors', '')
-        author_usernames = [username.strip().lower() for username in authors.split(',')]
-        author_users = []
+    def partial_update(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
 
-        for username in author_usernames:
-            if username:
-                author_user, created = User.objects.get_or_create(username=username)
-                author_users.append(author_user)
+    def destroy(self, request, *args, **kwargs):
+        project = self.get_object()
+        denied = self._forbid_unless_owner(project, "delete")
+        if denied:
+            return denied
+        if project.imgFile:
+            project.imgFile.delete(save=False)
+        project.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
-        if not request.user in author_users:
-            request.data['authors'] = f"{request.user.username}, {request.data['authors']}"
-            author_users.insert(0, request.user)
-
-        serializer = self.get_serializer(project, data=request.data, partial=True)
-        serializer.is_valid(raise_exception=True)  # Validate the data
-        # print("REACHED HERE")
-
-        self.perform_update(serializer) 
-
-        # **Only delete the old image if the update was successful**
-        if img_file and old_img_file and hasattr(old_img_file, 'path'):
-            old_img_file.delete(save=False)
-
-        # Set authors for the project
-        project.users.set(author_users)
-        response = Response(serializer.data)
-        response.data['authors'] = ', '.join(user.username for user in project.users.all())  # **CHANGED**: Update authors in the response
-
-
-        return response
-    
-
-    @action(detail=False, url_path='user/(?P<github_username>.+)')
+    @action(detail=False, url_path="user/(?P<github_username>[^/]+)")
     def user_projects(self, request, github_username=None):
-        # projects = self.get_queryset().filter(user__username=github_username)
-        # serializer = self.get_serializer(projects, many=True)
-        # return Response(serializer.data)
-        projects = self.get_queryset().filter(Q(user__username=github_username.lower()) | Q(users__username=github_username.lower())).distinct()
-        serializer = self.get_serializer(projects, many=True)
-        return Response(serializer.data)
-    
-    # Endpoint to handle likes
-    @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
+        username = github_username.lower()
+        projects = self.get_queryset().filter(Q(user__username=username) | Q(users__username=username)).distinct()
+        return Response(self.get_serializer(projects, many=True).data)
+
+    @action(detail=True, methods=["post"])
     def like(self, request, pk=None):
-        try:
-            project = self.get_object()
-            user = request.user
-            if user in project.likes.all():
-                project.likes.remove(user)
-                message = 'You disliked this project'
-            else:
-                project.likes.add(user)
-                message = 'You liked this project'
-            project.save()
-            return Response({'status': message, 'likes_count': project.total_likes()}, status=status.HTTP_200_OK)
-        except Exception as e:
-            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)  
+        """Toggle the signed-in user's like."""
+        project = self.get_object()
+        if project.likes.filter(pk=request.user.pk).exists():
+            project.likes.remove(request.user)
+            message = "You disliked this project"
+        else:
+            project.likes.add(request.user)
+            message = "You liked this project"
+        return Response({"status": message, "likes_count": project.total_likes()})
+
+
+class IsCommentAuthorOrProjectOwner(permissions.BasePermission):
+    """Authors may edit their comments; authors and the project owner may delete them."""
+
+    def has_object_permission(self, request, view, obj):
+        if request.method in permissions.SAFE_METHODS:
+            return True
+        if obj.user_id == request.user.id:
+            return True
+        return request.method == "DELETE" and obj.project.user_id == request.user.id
+
 
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsCommentAuthorOrProjectOwner]
 
     def get_queryset(self):
-        # Get the project_id from the URL
-        project_pk = self.kwargs['project_pk']
-        # Filter comments by project
-        return Comment.objects.filter(project_id=project_pk).order_by('-created_at')
+        return (
+            Comment.objects.filter(project_id=self.kwargs["project_pk"])
+            .select_related("user__profile", "project")
+            .order_by("-created_at")
+        )
 
     def perform_create(self, serializer):
-        project_pk = self.kwargs['project_pk']
-        project = get_object_or_404(Project, id=project_pk)
+        project = get_object_or_404(Project, id=self.kwargs["project_pk"])
         serializer.save(user=self.request.user, project=project)

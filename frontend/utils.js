@@ -1,64 +1,43 @@
-import { useNavigate } from "react-router-dom";
-import { githubClientID } from "./constants";
+import { useEffect } from "react"
+import { useNavigate } from "react-router-dom"
+import { jwtDecode } from "jwt-decode"
+import config from "./src/config"
+import { clearSession } from "./src/lib/session"
 
-import { useEffect } from "react";
-import {jwtDecode} from "jwt-decode";
-// import { useNavigate } from "react-router-dom";
-
-export function handleAuth (){
-  // window.location.href = `https://github.com/login/oauth/authorize?client_id=${githubClientID}`
-  window.location.href = `https://github.com/login/oauth/authorize?client_id=${githubClientID}&scope=repo`;
+export function handleAuth() {
+  const params = new URLSearchParams({ client_id: config.githubClientId, scope: config.githubScope })
+  window.location.href = `https://github.com/login/oauth/authorize?${params}`
 }
-// export function handleAuth() {
-//   window.location.href = `https://github.com/login/oauth/authorize?client_id=${githubClientID}&scope=repo:status,repo:invite,read:repo_hook,read:org,read:user`;
-// }
-
-
-
-// export function handleLogout (setUser){
-//   // const navigate=useNavigate()
-//   localStorage.setItem("user", JSON.stringify({ is_authenticated: false }))
-//   setUser({ is_authenticated: false })
-//   navigate("/")
-// }
 
 export const handleLogout = async ({ setUser }) => {
-  try {
-    // Perform your logout operations here (e.g., API call)
-    localStorage.removeItem('user');
-    localStorage.setItem("user", JSON.stringify({ is_authenticated: false }))
-    setUser({ is_authenticated: false });
-    // navigate("/")
-  } catch (error) {
-    console.error("Error logging out:", error);
-  }
-};
+  clearSession()
+  setUser({ is_authenticated: false })
+}
 
-
-// Custom hook for checking the token of the user and loggin out the  user if the token expires
-export const useAuthTokenExpiration = (token, setUser) => {
-  const navigate = useNavigate();
+// Log the user out when the *refresh* token expires (access tokens are renewed automatically).
+export const useAuthTokenExpiration = (refreshToken, setUser) => {
+  const navigate = useNavigate()
 
   useEffect(() => {
-    if (!token) return;
+    if (!refreshToken) return
 
-    const decodedToken = jwtDecode(token);
-    const expirationTime = decodedToken.exp * 1000; // Convert to milliseconds
-
-    const currentTime = Date.now();
-    const timeUntilExpiration = expirationTime - currentTime;
-
-    if (timeUntilExpiration <= 0) {
-      handleLogout({ setUser });
-      navigate("/");
-      return;
+    let expiresAt
+    try {
+      expiresAt = jwtDecode(refreshToken).exp * 1000
+    } catch {
+      expiresAt = 0
     }
-
-    const timer = setTimeout(() => {
-      handleLogout({ setUser });
-      navigate("/");
-    }, timeUntilExpiration);
-
-    return () => clearTimeout(timer);
-  }, [token, setUser, navigate]);
-};
+    const logout = () => {
+      handleLogout({ setUser })
+      navigate("/")
+    }
+    const remaining = expiresAt - Date.now()
+    if (remaining <= 0) {
+      logout()
+      return
+    }
+    // setTimeout overflows above ~24.8 days; refresh tokens last 14 days by default.
+    const timer = setTimeout(logout, Math.min(remaining, 2 ** 31 - 1))
+    return () => clearTimeout(timer)
+  }, [refreshToken, setUser, navigate])
+}

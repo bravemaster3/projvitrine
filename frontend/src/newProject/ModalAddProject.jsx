@@ -88,33 +88,22 @@ const ModalAddProject = ({
     })
   }
 
+  // Co-authors are suggested from the repo's public contributors (no GitHub token needed).
   const fetchRepoDetails = async (repoUrl) => {
-    const userInfo = JSON.parse(localStorage.getItem("user"))
-    const accessToken = userInfo?.github_token
-
     try {
-      const repoName = repoUrl.split("/").slice(-2).join("/") // Get repo name from URL
+      const repoName = repoUrl.split("/").slice(-2).join("/")
       const response = await axios.get(
-        `https://api.github.com/repos/${repoName}/collaborators`,
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            Accept: "application/vnd.github.v3+json",
-          },
-        }
+        `https://api.github.com/repos/${repoName}/contributors`,
+        { params: { per_page: 20 }, headers: { Accept: "application/vnd.github+json" } }
       )
-      console.log("RESPONSE STATUS: ", response.status)
-      if (response.status === 200) {
-        const collaboratorsList = response.data.map((c) => c.login).join(", ")
-        console.log("COLLABORATORS: ", collaboratorsList)
-        setCollaborators(collaboratorsList)
-        return collaboratorsList
-      } else {
-        console.error("Failed to fetch collaborators:", response.statusText)
-        return ""
-      }
+      const contributors = response.data
+        .filter((c) => c.type === "User")
+        .map((c) => c.login)
+        .join(", ")
+      setCollaborators(contributors)
+      return contributors
     } catch (error) {
-      console.error("Error fetching collaborators:", error)
+      console.error("Error fetching contributors:", error)
       return ""
     }
   }

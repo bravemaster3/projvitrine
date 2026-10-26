@@ -105,8 +105,7 @@ export default function Navbar({ user, setUser }) {
     }
   }, [startAuth])
 
-  const token = user?.token
-  useAuthTokenExpiration(token, setUser)
+  useAuthTokenExpiration(user?.refresh, setUser)
   return (
     <AppBar
       position="static"

@@ -15,6 +15,7 @@ import UsersMap from "./pages/UsersMap"
 import Portfolio from "./pages/Portfolio"
 import { useEffect, useState } from "react"
 import People from "./pages/People"
+import { LOGOUT_EVENT } from "./lib/session"
 
 const AppContent = () => {
   const [user, setUser] = useState(() => {
@@ -23,6 +24,13 @@ const AppContent = () => {
   })
 
   const location = useLocation()
+
+  // The session layer clears storage when a refresh fails; mirror that in state.
+  useEffect(() => {
+    const onLogout = () => setUser({ is_authenticated: false })
+    window.addEventListener(LOGOUT_EVENT, onLogout)
+    return () => window.removeEventListener(LOGOUT_EVENT, onLogout)
+  }, [])
 
   // Define the routes that should not display the Navbar and Footer
   const noNavbarFooterRoutes = ["/portfolios/:github_username"]

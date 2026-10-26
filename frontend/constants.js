@@ -1,51 +1,19 @@
+import config from "./src/config"
+import countries from "./src/data/countries.json"
 
-import axios from 'axios';
-export const allCohorts = {};
-
-allCohorts[`Non-ALX`] = "Non-ALX"
+// Legacy ALX cohort list; replaced by communities in phase 2.
+export const allCohorts = { "Non-ALX": "Non-ALX" }
 for (let i = 1; i <= 21; i++) {
-  allCohorts[`C${i}`] = `ALX Cohort ${i}`;
+  allCohorts[`C${i}`] = `ALX Cohort ${i}`
 }
 
-// export const backendURL = process.env.VITE_BACKEND_URL || "http://localhost:8000";
-// export const frontendURL = process.env.VITE_FRONTEND_URL || "http://localhost";
-// export const githubClientID = process.env.VITE_GITHUB_CLIENT_ID || "3892f236d44713033395";
-export const backendURL = "https://alxhof.kndev.org";
-export const frontendURL = "https://alxhof.kndev.org";
-export const githubClientID = "3892f236d44713033395";
-// export const backendURL = "http://localhost:8000";
-// export const frontendURL = "http://localhost";
-// export const githubClientID = "Ov23ctsK0SUTT4j9w0iz";
+export const backendURL = config.apiUrl
+export const frontendURL = config.siteUrl
+export const githubClientID = config.githubClientId
 
-let cachedCountries = null;
+// Country name -> { name, latlng }, bundled locally (restcountries v3.1 was retired).
+const allCountries = Object.fromEntries(
+  Object.entries(countries).map(([name, latlng]) => [name, { name, latlng }])
+)
 
-export const fetchAllCountries = async () => {
-  if (cachedCountries) {
-    return cachedCountries;
-  }
-
-  try {
-    const response = await axios.get('https://restcountries.com/v3.1/all');
-    cachedCountries = response.data.reduce((acc, country) => {
-      if (country.name.common && country.latlng) {
-        acc[country.name.common] = {
-          name: country.name.common,
-          latlng: country.latlng
-        };
-      }
-      return acc;
-    }, {});
-
-    cachedCountries = Object.keys(cachedCountries)
-    .sort()
-    .reduce((acc, key) => {
-      acc[key] = cachedCountries[key];
-      return acc;
-    }, {});
-    
-    return cachedCountries;
-  } catch (error) {
-    console.error("Error fetching countries:", error);
-    return {};
-  }
-};
+export const fetchAllCountries = async () => allCountries

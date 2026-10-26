@@ -1,19 +1,14 @@
-version: '3.8'
-
+# Production stack (current droplet). Coolify will run the same images.
 services:
   db:
     restart: always
     image: postgres:15-alpine
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
     environment:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
-    env_file:
-      - .env  # Specify the environment file for the db service
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
       interval: 10s
@@ -25,11 +20,6 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile.prod
-    command: >
-      sh -c "python manage.py makemigrations  && python manage.py migrate && 
-            python manage.py collectstatic --noinput && gunicorn backend.wsgi --bind 0.0.0.0:8000 --workers 3"
-    ports:
-      - "8000:8000"
     env_file:
       - .env
     volumes:
@@ -47,14 +37,15 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile.prod
+      args:
+        VITE_API_URL: ${VITE_API_URL:-}
+        VITE_SITE_URL: ${VITE_SITE_URL:-}
+        VITE_GITHUB_CLIENT_ID: ${VITE_GITHUB_CLIENT_ID:-}
+        VITE_BRAND_NAME: ${VITE_BRAND_NAME:-Showcase}
+        VITE_DEFAULT_LANG: ${VITE_DEFAULT_LANG:-en}
+        VITE_LANGS: ${VITE_LANGS:-en,fr,sv}
     volumes:
       - react_build:/usr/src/app/dist
-    env_file:
-      - .env
-    environment:
-      VITE_BACKEND_URL: ${VITE_BACKEND_URL}
-      VITE_FRONTEND_URL: ${VITE_FRONTEND_URL}
-      VITE_MEDIA_URL: ${VITE_MEDIA_URL}
 
   nginx:
     restart: always

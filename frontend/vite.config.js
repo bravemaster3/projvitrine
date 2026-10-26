@@ -14,6 +14,9 @@ export default defineConfig({
     sourcemap: false,
     target: ['es2020'],
   },
+  test: {
+    environment: 'jsdom',
+  },
   optimizeDeps: {
     exclude: ['axios', 'react-icons/ai', 'react-icons/fa6'],
   },

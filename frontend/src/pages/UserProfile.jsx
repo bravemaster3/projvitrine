@@ -93,9 +93,6 @@ const UserProfile = ({
             {userProfile.username || "Not provided"}
           </Typography>
           <Typography variant="body1">
-            <strong>Email:</strong> {userProfile.email || "Not provided"}
-          </Typography>
-          <Typography variant="body1">
             <strong>Location:</strong> {userProfile.location || "Not provided"}
           </Typography>
           <Typography variant="body1">
