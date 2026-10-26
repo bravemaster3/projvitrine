@@ -1,7 +1,27 @@
 import { describe, expect, it } from "vitest"
-import { formatPeriod, initials, localizeProfile, localizeProject, projectYear, skillsFrom, splitTags } from "./content"
+import { collaborators, formatPeriod, initials, localizeProfile, localizeProject, projectYear, skillsFrom, splitTags } from "./content"
 
 describe("content helpers", () => {
+  it("lists collaborators without the page owner and without duplicate invites", () => {
+    const project = {
+      users: [
+        { username: "pesho2k", full_name: "" },
+        { username: "bravemaster3", handle: "bravemaster3", full_name: "Koffi" },
+        { username: "olakunle64", handle: "olakunle64", full_name: "Salau Olakunle" },
+      ],
+      invites: [
+        { github_username: "pesho2k", status: "pending" },
+        { github_username: "newfriend", status: "pending" },
+        { github_username: "gone", status: "declined" },
+      ],
+    }
+    expect(collaborators(project, { username: "bravemaster3" })).toEqual([
+      { key: "pesho2k", name: "pesho2k", handle: "pesho2k" },
+      { key: "olakunle64", name: "Salau Olakunle", handle: "olakunle64" },
+      { key: "newfriend", name: "@newfriend", handle: null },
+    ])
+  })
+
   it("merges skills case-insensitively and sorts by frequency", () => {
     const skills = skillsFrom([{ tags: "Python, React" }, { tags: "python, Leaflet" }, { tags: "React JS" }])
     expect(skills[0]).toEqual({ name: "Python", count: 2 })

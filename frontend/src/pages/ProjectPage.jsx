@@ -24,6 +24,7 @@ import {
   formatPeriod,
   localizeProject,
   mediaUrl,
+  pendingInvites,
   portfolioPath,
   projectPath,
   splitTags,
@@ -186,12 +187,12 @@ export default function ProjectPage() {
   const period = formatPeriod(project.period_start, project.period_end, lang, t("project.present"))
   const others = (more.data?.projects || []).filter((p) => p.id !== project.id).slice(0, 3)
   const authors = project.users || []
-  const pendingInvites = (project.invites || []).filter((i) => i.status === "pending")
+  const invites = pendingInvites(project)
   const meta = [
     project.role && { label: t("project.role"), value: project.role },
     period && { label: t("project.period"), value: period },
     splitTags(project.tags)[0] && { label: t("project.stack"), value: splitTags(project.tags).slice(0, 3).join(", ") },
-    { label: t("project.authors"), value: authors.length + pendingInvites.length },
+    { label: t("project.authors"), value: authors.length + invites.length },
     { label: t("project.appreciations"), value: project.likes_count ?? 0 },
   ].filter(Boolean)
 
@@ -313,7 +314,7 @@ export default function ProjectPage() {
                   </Link>
                 </li>
               ))}
-              {pendingInvites.map((i) => (
+              {invites.map((i) => (
                 <li key={i.github_username} className="flex items-center gap-2.5 text-muted">
                   <Avatar name={i.github_username} size="sm" />
                   <a href={`https://github.com/${i.github_username}`} className="text-[15px] hover:underline">

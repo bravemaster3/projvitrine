@@ -2,6 +2,7 @@ import { Link } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 import { ArrowRight, ExternalLink, Heart } from "lucide-react"
 import {
+  collaborators,
   displayName,
   initials,
   linkOf,
@@ -56,6 +57,30 @@ function Tags({ project, max = 4, size }) {
   )
 }
 
+/** "with Ana, Ben" — everyone credited except the person whose page this is. */
+function Collaborators({ project, exclude, className = "text-sm" }) {
+  const { t } = useTranslation()
+  const people = collaborators(project, exclude)
+  if (!people.length) return null
+  return (
+    <p className={`text-muted ${className}`}>
+      {t("project.with")}{" "}
+      {people.map((person, i) => (
+        <span key={person.key}>
+          {i > 0 && ", "}
+          {person.handle ? (
+            <Link to={`/u/${person.handle}`} className="font-medium text-accent hover:underline">
+              {person.name}
+            </Link>
+          ) : (
+            <span className="font-medium">{person.name}</span>
+          )}
+        </span>
+      ))}
+    </p>
+  )
+}
+
 /** Large featured project: image left, text right. */
 export function FeaturedProject({ project, owner }) {
   const { t, i18n } = useTranslation()
@@ -75,6 +100,7 @@ export function FeaturedProject({ project, owner }) {
           </Link>
         </h3>
         <p className="text-muted">{summary}</p>
+        <Collaborators project={project} exclude={owner} />
         <Tags project={project} />
         <div className="flex flex-wrap items-center gap-2.5 pt-1.5">
           <Button to={projectPath(owner, project)} size="md">
@@ -105,7 +131,6 @@ export function ProjectCard({ project, owner, showOwner = false }) {
   const author = owner || project.user
   const code = linkOf(project, "code")
   const live = linkOf(project, "live")
-  const coauthors = (project.users || []).filter((u) => u.username !== author?.username)
   return (
     <article className="flex flex-col overflow-hidden rounded-card border border-border bg-surface shadow-card transition hover:-translate-y-0.5">
       <Link to={projectPath(author, project)} tabIndex={-1} aria-hidden>
@@ -119,19 +144,7 @@ export function ProjectCard({ project, owner, showOwner = false }) {
           </Link>
         </h3>
         <p className="line-clamp-3 text-[15px] text-muted">{summary}</p>
-        {!showOwner && coauthors.length > 0 && (
-          <p className="text-sm text-muted">
-            {t("project.with")}{" "}
-            {coauthors.map((u, i) => (
-              <span key={u.username}>
-                {i > 0 && ", "}
-                <Link to={`/u/${u.handle || u.username}`} className="font-medium text-accent hover:underline">
-                  {displayName(u)}
-                </Link>
-              </span>
-            ))}
-          </p>
-        )}
+        <Collaborators project={project} exclude={author} />
         <Tags project={project} max={3} size="sm" />
         <div className="mt-auto flex flex-wrap items-center gap-4 border-t border-border pt-3 text-sm font-medium">
           {showOwner && author ? (
@@ -176,6 +189,7 @@ export function ProjectRow({ project, owner }) {
           {title}
         </Link>
         <p className="line-clamp-2 text-sm text-muted">{summary}</p>
+        <Collaborators project={project} exclude={owner} className="mt-0.5 text-[13px]" />
       </div>
       <div className="hidden flex-[1_1_200px] flex-wrap gap-1.5 md:flex">
         {splitTags(project.tags)
