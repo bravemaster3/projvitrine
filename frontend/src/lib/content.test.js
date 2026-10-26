@@ -1,7 +1,16 @@
 import { describe, expect, it } from "vitest"
-import { collaborators, formatPeriod, initials, localizeProfile, localizeProject, projectYear, skillsFrom, splitTags } from "./content"
+import { collaborators, decodeContactEmail, formatPeriod, initials, localizeProfile, localizeProject, projectYear, skillsFrom, splitTags } from "./content"
 
 describe("content helpers", () => {
+  it("decodes the public contact email", () => {
+    // what the backend sends for "hello@alice.dev" and "émile@exemple.fr"
+    const encode = (email) =>
+      btoa(String.fromCharCode(...new TextEncoder().encode([...email].reverse().join(""))))
+    expect(decodeContactEmail(encode("hello@alice.dev"))).toBe("hello@alice.dev")
+    expect(decodeContactEmail(encode("émile@exemple.fr"))).toBe("émile@exemple.fr")
+    expect(decodeContactEmail("dmVkLmVjaWxhQG9sbGVo")).toBe("hello@alice.dev")
+  })
+
   it("lists collaborators without the page owner and without duplicate invites", () => {
     const project = {
       users: [

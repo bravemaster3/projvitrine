@@ -1,3 +1,4 @@
+import base64
 from unittest import mock
 
 import pytest
@@ -142,3 +143,42 @@ def test_signal_handlers_are_registered():
     # disconnect() returns True only if the handler was connected
     assert post_save.disconnect(save_user_profile, sender=User)
     post_save.connect(save_user_profile, sender=User)
+
+
+def _contact(client, username):
+    return client.get(f"/api/portfolio/{username}/").json()["user"]["contact"]
+
+
+def test_contact_defaults_to_the_first_available_target(client, make_user):
+    make_user("alice")
+    assert _contact(client, "alice") == {"via": "github", "href": "https://github.com/alice"}
+    make_user("bob", website="https://bob.dev", linkedin="https://linkedin.com/in/bob")
+    assert _contact(client, "bob") == {"via": "linkedin", "href": "https://linkedin.com/in/bob"}
+
+
+def test_contact_email_is_public_only_encoded(client, auth_client, make_user):
+    alice = make_user("alice", email="alice@account.test", linkedin="https://linkedin.com/in/alice")
+    response = auth_client(alice).put(
+        "/api/users/update/", {"contact_email": "hello@alice.dev", "contact_via": ""}, format="json"
+    )
+    assert response.status_code == 200, response.content
+    assert response.json()["contact_email"] == "hello@alice.dev"
+
+    page = client.get("/api/portfolio/alice/").content.decode()
+    assert "hello@alice.dev" not in page and "alice@account.test" not in page
+    contact = _contact(client, "alice")
+    assert contact["via"] == "mail"
+    assert base64.b64decode(contact["code"]).decode()[::-1] == "hello@alice.dev"
+
+
+def test_contact_choice_and_hidden(client, auth_client, make_user):
+    alice = make_user("alice", website="https://alice.dev", linkedin="https://linkedin.com/in/alice")
+    api = auth_client(alice)
+    api.put("/api/users/update/", {"contact_via": "website"}, format="json")
+    assert _contact(client, "alice") == {"via": "website", "href": "https://alice.dev"}
+    # a choice without a value falls back to the automatic order
+    api.put("/api/users/update/", {"contact_via": "mail"}, format="json")
+    assert _contact(client, "alice")["via"] == "linkedin"
+    api.put("/api/users/update/", {"contact_via": "none"}, format="json")
+    assert _contact(client, "alice") is None
+    assert api.put("/api/users/update/", {"contact_via": "fax"}, format="json").status_code == 400

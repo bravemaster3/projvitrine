@@ -14,7 +14,7 @@ import Field, { Toggle } from "../components/ui/Field"
 import { PageSkeleton } from "../components/ui/Feedback"
 import { useToast } from "../components/ui/Toast"
 
-const TEXT_FIELDS = ["full_name", "handle", "headline", "bio", "location", "email", "website", "linkedin", "twitter", "facebook", "orcid", "scholar"]
+const TEXT_FIELDS = ["full_name", "handle", "headline", "bio", "location", "email", "website", "linkedin", "twitter", "facebook", "orcid", "scholar", "contact_email", "contact_via"]
 
 function Section({ title, description, children }) {
   return (
@@ -122,6 +122,31 @@ export default function ProfileSettings() {
             <Field label="ORCID iD" placeholder="0000-0002-1825-0097" value={form.orcid} onChange={set("orcid")} error={errors.orcid} />
             <Field type="url" label="Google Scholar" value={form.scholar} onChange={set("scholar")} error={errors.scholar} />
           </div>
+        </Section>
+
+        <Section title={t("settings.contact")} description={t("settings.contactHint")}>
+          <Field
+            type="email"
+            label={t("settings.contactEmail")}
+            hint={t("settings.contactEmailHint")}
+            value={form.contact_email}
+            onChange={set("contact_email")}
+            error={errors.contact_email}
+          />
+          <Field as="select" label={t("settings.contactVia")} value={form.contact_via} onChange={set("contact_via")} error={errors.contact_via}>
+            <option value="">{t("settings.contactAuto")}</option>
+            {[
+              ["mail", t("settings.contactMail"), form.contact_email],
+              ["linkedin", "LinkedIn", form.linkedin],
+              ["website", t("profile.website"), form.website],
+              ["github", "GitHub", true],
+            ].map(([value, label, filled]) => (
+              <option key={value} value={value} disabled={!filled}>
+                {filled ? label : `${label} (${t("settings.contactNotSet")})`}
+              </option>
+            ))}
+            <option value="none">{t("settings.contactNone")}</option>
+          </Field>
         </Section>
 
         <Section title={t("settings.communities")} description={t("settings.communitiesHint")}>

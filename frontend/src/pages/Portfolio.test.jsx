@@ -108,6 +108,21 @@ describe("Portfolio page", () => {
     expect(within(index).queryByRole("link", { name: "EVE" })).not.toBeInTheDocument()
   })
 
+  it("leads 'Get in touch' to the owner's choice, or hides it", async () => {
+    api.portfolio.mockResolvedValue({ user: { ...user, contact: { via: "linkedin", href: "https://linkedin.com/in/k" } }, projects: [] })
+    const { unmount } = renderPortfolio()
+    const buttons = await screen.findAllByRole("link", { name: /Get in touch/ })
+    buttons.forEach((b) => expect(b).toHaveAttribute("href", "https://linkedin.com/in/k"))
+    expect(screen.getByText("Have a project in mind?")).toBeInTheDocument()
+    unmount()
+
+    api.portfolio.mockResolvedValue({ user: { ...user, contact: null }, projects: [] })
+    renderPortfolio()
+    await screen.findByRole("heading", { level: 1 })
+    expect(screen.queryByText(/Get in touch/)).not.toBeInTheDocument()
+    expect(screen.queryByText("Have a project in mind?")).not.toBeInTheDocument()
+  })
+
   it("switches the interface and headline language", async () => {
     renderPortfolio()
     await screen.findByRole("heading", { level: 1 })
