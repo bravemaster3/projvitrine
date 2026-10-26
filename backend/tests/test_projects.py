@@ -60,6 +60,26 @@ def test_plain_post_works_like_create_with_token(auth_client, make_user):
     assert response.status_code == 201
 
 
+def test_empty_dates_mean_no_date(auth_client, make_user):
+    """Regression: leaving "Ended" empty (ongoing) failed with "Date has wrong format"."""
+    api = auth_client(make_user("owner"))
+    response = api.post(
+        "/api/projects/",
+        project_payload(period_start="2024-03-01", period_end=""),
+        format="multipart",
+    )
+    assert response.status_code == 201, response.content
+    assert response.json()["period_start"] == "2024-03-01"
+    assert response.json()["period_end"] is None
+    # clearing dates that were set
+    project_id = response.json()["id"]
+    api.patch(f"/api/projects/{project_id}/", {"period_end": "2025-01-01"}, format="multipart")
+    response = api.patch(f"/api/projects/{project_id}/", {"period_start": "", "period_end": ""}, format="multipart")
+    assert response.status_code == 200, response.content
+    assert response.json()["period_start"] is None
+    assert response.json()["period_end"] is None
+
+
 def test_update_without_new_image_keeps_image(auth_client, make_user):
     """Regression: the old update() crashed or dropped the image when none was uploaded."""
     owner = make_user("owner")

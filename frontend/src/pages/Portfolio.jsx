@@ -17,7 +17,6 @@ import Chip, { Badge } from "../components/ui/Chip"
 import { EmptyState, ErrorState, PageSkeleton } from "../components/ui/Feedback"
 import { useToast } from "../components/ui/Toast"
 
-const FEATURED_FALLBACK = 3
 
 export function profileLinks(user, t) {
   const links = [
@@ -93,8 +92,8 @@ export default function Portfolio() {
   const profile = localizeProfile(user, lang)
   const links = profileLinks(user, t)
   const skills = skillsFrom(projects).slice(0, 16)
-  const flagged = projects.filter((p) => p.featured)
-  const featured = flagged.length ? flagged : projects.slice(0, FEATURED_FALLBACK)
+  // Only projects the owner marked as featured; no section at all otherwise.
+  const featured = projects.filter((p) => p.featured)
   const indexed = skill ? projects.filter((p) => hasTag(p, skill)) : projects
   const coauthors = new Set(projects.flatMap((p) => (p.users || []).map((u) => u.username)))
   coauthors.delete(user.username)
@@ -197,19 +196,21 @@ export default function Portfolio() {
           )}
 
           {/* Featured */}
-          <section aria-labelledby="featured" className="flex flex-col gap-6">
-            <h2 id="featured" className="text-[22px] font-semibold tracking-tight">
-              {t("portfolio.featured")}
-            </h2>
-            <FeaturedProject project={featured[0]} owner={user} />
-            {featured.length > 1 && (
-              <div className="grid gap-6 sm:grid-cols-2">
-                {featured.slice(1).map((p) => (
-                  <ProjectCard key={p.id} project={p} owner={user} />
-                ))}
-              </div>
-            )}
-          </section>
+          {featured.length > 0 && (
+            <section aria-labelledby="featured" className="flex flex-col gap-6">
+              <h2 id="featured" className="text-[22px] font-semibold tracking-tight">
+                {t("portfolio.featured")}
+              </h2>
+              <FeaturedProject project={featured[0]} owner={user} />
+              {featured.length > 1 && (
+                <div className="grid gap-6 sm:grid-cols-2">
+                  {featured.slice(1).map((p) => (
+                    <ProjectCard key={p.id} project={p} owner={user} />
+                  ))}
+                </div>
+              )}
+            </section>
+          )}
 
           {/* Index */}
           <section aria-labelledby="all-projects" className="flex flex-col gap-4">

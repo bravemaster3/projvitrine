@@ -17,11 +17,11 @@ export function PersonCard({ person }) {
   return (
     <Link
       to={`/u/${person.handle || person.username}`}
-      className="flex flex-col gap-3 rounded-card border border-border bg-surface p-5 shadow-card transition hover:-translate-y-0.5"
+      className="flex min-w-0 flex-col gap-3 rounded-card border border-border bg-surface p-5 shadow-card transition hover:-translate-y-0.5"
     >
-      <div className="flex items-center gap-3">
+      <div className="flex min-w-0 items-center gap-3">
         <Avatar src={person.avatar} name={displayName(person)} size="md" />
-        <div className="min-w-0">
+        <div className="min-w-0 flex-1">
           <p className="truncate font-semibold">{displayName(person)}</p>
           <p className="truncate text-sm text-muted">@{person.username}</p>
         </div>
@@ -72,13 +72,13 @@ function PeopleGrid({ people, loading }) {
         />
       </label>
       {loading ? (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {[0, 1, 2, 3, 4, 5].map((i) => (
             <Skeleton key={i} className="h-40 rounded-card" />
           ))}
         </div>
       ) : shown.length ? (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {shown.map((p) => (
             <PersonCard key={p.id} person={p} />
           ))}

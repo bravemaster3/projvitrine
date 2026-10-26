@@ -9,6 +9,22 @@ export const mediaUrl = (path) => {
 
 export const displayName = (user) => user?.full_name?.trim() || user?.username || ""
 
+/** Pending co-author invites, minus people already listed as authors. */
+export const pendingInvites = (project) => {
+  const usernames = new Set((project?.users || []).map((u) => u.username?.toLowerCase()))
+  return (project?.invites || []).filter(
+    (i) => i.status === "pending" && !usernames.has(i.github_username?.toLowerCase())
+  )
+}
+
+/** Everyone credited on a project except `exclude` (the person whose page it is). */
+export const collaborators = (project, exclude) => [
+  ...(project?.users || [])
+    .filter((u) => u.username !== exclude?.username)
+    .map((u) => ({ key: u.username, name: displayName(u), handle: u.handle || u.username })),
+  ...pendingInvites(project).map((i) => ({ key: i.github_username, name: `@${i.github_username}`, handle: null })),
+]
+
 export const initials = (text = "") =>
   text
     .replace(/[^\p{L}\p{N} ]/gu, " ")

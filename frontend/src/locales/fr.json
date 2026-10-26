@@ -43,7 +43,7 @@
   },
   "profile": { "website": "Site web" },
   "project": {
-    "notFound": "Projet introuvable", "caseStudy": "Étude de cas", "code": "Code", "live": "En ligne", "with": "avec",
+    "notFound": "Projet introuvable", "caseStudy": "Voir le projet", "code": "Code", "live": "En ligne", "with": "avec", "andMore": "+{{count}} autres",
     "role": "Rôle", "period": "Période", "present": "aujourd’hui", "stack": "Technologies", "authors": "Auteurs",
     "appreciations": "Appréciations", "share": "Partager ce projet", "edit": "Modifier le projet",
     "appreciationCount_one": "{{count}} appréciation", "appreciationCount_other": "{{count}} appréciations",

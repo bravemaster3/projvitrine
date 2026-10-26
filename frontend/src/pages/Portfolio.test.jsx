@@ -60,7 +60,9 @@ describe("Portfolio page", () => {
       user,
       projects: [
         project(4, "HuHoLa", "Python, Peatlands", { featured: true }),
-        project(5, "PostEddyPro", "R, Carbon flux"),
+        project(5, "PostEddyPro", "R, Carbon flux", {
+          users: [user, { username: "olakunle64", handle: "olakunle64", full_name: "Salau Olakunle" }],
+        }),
         project(7, "MiresChrono", "Leaflet, Peatlands"),
       ],
     })
@@ -82,9 +84,28 @@ describe("Portfolio page", () => {
     expect(within(featured).getAllByRole("heading", { level: 3 })[0]).toHaveTextContent("HuHoLa")
 
     const index = screen.getByRole("region", { name: /All projects/ })
-    expect(within(index).getAllByRole("link")).toHaveLength(3)
+    const titles = () => within(index).getAllByRole("link").filter((a) => a.closest("p") === null).map((a) => a.textContent)
+    expect(titles()).toEqual(["HuHoLa", "PostEddyPro", "MiresChrono"])
+    // collaborators are credited in the index too
+    expect(within(index).getByRole("link", { name: "Salau Olakunle" })).toHaveAttribute("href", "/u/olakunle64")
     await userEvent.click(screen.getByRole("button", { name: /Peatlands/ }))
-    expect(within(index).getAllByRole("link").map((a) => a.textContent)).toEqual(["HuHoLa", "MiresChrono"])
+    expect(titles()).toEqual(["HuHoLa", "MiresChrono"])
+  })
+
+  it("has no featured section when nothing is featured", async () => {
+    api.portfolio.mockResolvedValue({ user, projects: [project(5, "PostEddyPro", "R"), project(7, "MiresChrono", "Leaflet")] })
+    renderPortfolio()
+    expect(await screen.findByRole("region", { name: /All projects/ })).toBeInTheDocument()
+    expect(screen.queryByRole("region", { name: "Featured work" })).not.toBeInTheDocument()
+  })
+
+  it("shortens long collaborator lists", async () => {
+    const people = ["ana", "ben", "cy", "dee", "eve"].map((name) => ({ username: name, handle: name, full_name: name.toUpperCase() }))
+    api.portfolio.mockResolvedValue({ user, projects: [project(5, "PostEddyPro", "R", { users: [user, ...people] })] })
+    renderPortfolio()
+    const index = await screen.findByRole("region", { name: /All projects/ })
+    expect(within(index).getByText(/\+2 more/)).toBeInTheDocument()
+    expect(within(index).queryByRole("link", { name: "EVE" })).not.toBeInTheDocument()
   })
 
   it("switches the interface and headline language", async () => {

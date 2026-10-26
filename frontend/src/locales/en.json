@@ -43,7 +43,7 @@
   },
   "profile": { "website": "Website" },
   "project": {
-    "notFound": "Project not found", "caseStudy": "Case study", "code": "Code", "live": "Live", "with": "with",
+    "notFound": "Project not found", "caseStudy": "View project", "code": "Code", "live": "Live", "with": "with", "andMore": "+{{count}} more",
     "role": "Role", "period": "Period", "present": "present", "stack": "Tech stack", "authors": "Authors",
     "appreciations": "Appreciations", "share": "Share this project", "edit": "Edit project",
     "appreciationCount_one": "{{count}} appreciation", "appreciationCount_other": "{{count}} appreciations",
