@@ -14,7 +14,7 @@ describe("config", () => {
   it("has defaults when nothing is configured", async () => {
     const config = await loadConfig()
     expect(config.apiUrl).toBe("")
-    expect(config.brandName).toBe("Proofolio")
+    expect(config.brandName).toBe("ProjVitrine")
     expect(config.langs).toEqual(["en", "fr", "sv"])
     expect(config.siteUrl).toBe(window.location.origin)
     expect(config.githubScope).toBe("read:user user:email")
@@ -22,14 +22,14 @@ describe("config", () => {
 
   it("uses settings written by the web container at start-up", async () => {
     window.__APP_CONFIG__ = {
-      siteUrl: "https://proofolio.kndev.org/",
-      brandName: "Proofolio",
+      siteUrl: "https://projvitrine.kndev.org/",
+      brandName: "ProjVitrine",
       githubClientId: "abc123",
       langs: "en, fr",
       apiUrl: "",
     }
     const config = await loadConfig()
-    expect(config.siteUrl).toBe("https://proofolio.kndev.org")
+    expect(config.siteUrl).toBe("https://projvitrine.kndev.org")
     expect(config.githubClientId).toBe("abc123")
     expect(config.langs).toEqual(["en", "fr"])
   })
@@ -37,7 +37,7 @@ describe("config", () => {
   it("ignores blank runtime values", async () => {
     window.__APP_CONFIG__ = { brandName: "  ", siteUrl: "" }
     const config = await loadConfig()
-    expect(config.brandName).toBe("Proofolio")
+    expect(config.brandName).toBe("ProjVitrine")
     expect(config.siteUrl).toBe(window.location.origin)
   })
 })

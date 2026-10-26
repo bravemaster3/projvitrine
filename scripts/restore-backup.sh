@@ -4,9 +4,9 @@
 #
 #   sh restore-backup.sh <backup-dir> [<coolify-resource-uuid>]
 #
-# Containers are found by name: on Coolify they are called proofolio-db-<uuid>
-# and proofolio-backend-<uuid>; on the droplet <project>-db-1 / -backend-1.
-# Pass the uuid when several Proofolio stacks run on the server.
+# Containers are found by name: on Coolify they are called projvitrine-db-<uuid>
+# and projvitrine-backend-<uuid>; on the droplet <project>-db-1 / -backend-1.
+# Pass the uuid when several ProjVitrine stacks run on the server.
 # Override with DB_CONTAINER=... BACKEND_CONTAINER=... if needed.
 #
 # WARNING: replaces the database contents of the target stack.
@@ -18,9 +18,9 @@ UUID=${2:-}
 
 find_container() {
     names=$(docker ps --format '{{.Names}}')
-    # On a shared server, only ever consider Proofolio's own containers.
-    if printf '%s\n' "$names" | grep -q 'proofolio-'; then
-        names=$(printf '%s\n' "$names" | grep 'proofolio-')
+    # On a shared server, only ever consider ProjVitrine's own containers.
+    if printf '%s\n' "$names" | grep -q 'projvitrine-'; then
+        names=$(printf '%s\n' "$names" | grep 'projvitrine-')
     fi
     matches=$(printf '%s\n' "$names" | grep -E "(^|[-_])$1([-_]|$)" | grep -- "$UUID" || true)
     count=$(printf '%s\n' "$matches" | grep -c . || true)

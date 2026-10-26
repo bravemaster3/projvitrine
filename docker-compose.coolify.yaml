@@ -2,20 +2,20 @@
 # /docker-compose.coolify.yaml. Nothing is built on the server: the images are
 # built by GitHub Actions and pulled from GitHub's container registry.
 # Set variables in the resource's Environment Variables tab (docs/COOLIFY.md)
-# and give `proofolio-web` the domain(s), port 8080.
+# and give `projvitrine-web` the domain(s), port 8080.
 #
 # Service names are prefixed so they cannot clash with other stacks on the same
 # server (e.g. another app's `db`), even on a shared Docker network.
 services:
-  proofolio-db:
+  projvitrine-db:
     image: postgres:15-alpine
     restart: unless-stopped
     environment:
-      POSTGRES_DB: ${DB_NAME:-proofolio}
-      POSTGRES_USER: ${DB_USER:-proofolio}
+      POSTGRES_DB: ${DB_NAME:-projvitrine}
+      POSTGRES_USER: ${DB_USER:-projvitrine}
       POSTGRES_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD}
     volumes:
-      - proofolio_postgres:/var/lib/postgresql/data
+      - projvitrine_postgres:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 10s
@@ -26,8 +26,8 @@ services:
         limits:
           memory: 256M
 
-  proofolio-backend:
-    image: ${BACKEND_IMAGE:-ghcr.io/bravemaster3/proofolio-backend}:${IMAGE_TAG:-latest}
+  projvitrine-backend:
+    image: ${BACKEND_IMAGE:-ghcr.io/bravemaster3/projvitrine-backend}:${IMAGE_TAG:-latest}
     pull_policy: always
     restart: unless-stopped
     environment:
@@ -38,24 +38,24 @@ services:
       SITE_DOMAIN: ${SITE_DOMAIN:-}
       ALLOWED_HOSTS: ${ALLOWED_HOSTS:-}
       CSRF_TRUSTED_ORIGINS: ${CSRF_TRUSTED_ORIGINS:-}
-      DB_NAME: ${DB_NAME:-proofolio}
-      DB_USER: ${DB_USER:-proofolio}
+      DB_NAME: ${DB_NAME:-projvitrine}
+      DB_USER: ${DB_USER:-projvitrine}
       DB_PASSWORD: ${DB_PASSWORD}
-      DB_HOST: proofolio-db
+      DB_HOST: projvitrine-db
       DB_PORT: "5432"
       GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID:-}
       GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET:-}
       SOCIAL_AUTH_GITHUB_KEY: ${SOCIAL_AUTH_GITHUB_KEY:-}
       SOCIAL_AUTH_GITHUB_SECRET: ${SOCIAL_AUTH_GITHUB_SECRET:-}
-      VITE_BRAND_NAME: ${VITE_BRAND_NAME:-Proofolio}
+      VITE_BRAND_NAME: ${VITE_BRAND_NAME:-ProjVitrine}
       LANGS: ${LANGS:-}
-      INDEX_HTML_URL: http://proofolio-web:8080/index.html
+      INDEX_HTML_URL: http://projvitrine-web:8080/index.html
       LOG_LEVEL: ${LOG_LEVEL:-INFO}
       GUNICORN_WORKERS: ${GUNICORN_WORKERS:-2}
     volumes:
-      - proofolio_media:/usr/src/app/media
+      - projvitrine_media:/usr/src/app/media
     depends_on:
-      proofolio-db:
+      projvitrine-db:
         condition: service_healthy
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/health/', timeout=4)"]
@@ -68,12 +68,12 @@ services:
         limits:
           memory: 384M
 
-  proofolio-web:
-    image: ${WEB_IMAGE:-ghcr.io/bravemaster3/proofolio-web}:${IMAGE_TAG:-latest}
+  projvitrine-web:
+    image: ${WEB_IMAGE:-ghcr.io/bravemaster3/projvitrine-web}:${IMAGE_TAG:-latest}
     pull_policy: always
     restart: unless-stopped
     environment:
-      BACKEND_UPSTREAM: proofolio-backend:8000
+      BACKEND_UPSTREAM: projvitrine-backend:8000
       CANONICAL_HOST: ${CANONICAL_HOST:-}
       SITE_URL: ${SITE_URL:-}
       SITE_DOMAIN: ${SITE_DOMAIN:-}
@@ -81,15 +81,15 @@ services:
       VITE_GITHUB_CLIENT_ID: ${VITE_GITHUB_CLIENT_ID:-}
       GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID:-}
       SOCIAL_AUTH_GITHUB_KEY: ${SOCIAL_AUTH_GITHUB_KEY:-}
-      VITE_BRAND_NAME: ${VITE_BRAND_NAME:-Proofolio}
+      VITE_BRAND_NAME: ${VITE_BRAND_NAME:-ProjVitrine}
       VITE_SOURCE_URL: ${VITE_SOURCE_URL:-}
       LANGS: ${LANGS:-}
     expose:
       - "8080"
     volumes:
-      - proofolio_media:/media:ro
+      - projvitrine_media:/media:ro
     depends_on:
-      proofolio-backend:
+      projvitrine-backend:
         condition: service_healthy
     deploy:
       resources:
@@ -97,5 +97,5 @@ services:
           memory: 64M
 
 volumes:
-  proofolio_postgres:
-  proofolio_media:
+  projvitrine_postgres:
+  projvitrine_media:

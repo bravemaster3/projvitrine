@@ -66,48 +66,48 @@ jobs:
       # Start the real images and check them before anything is published.
       - name: Build images for the smoke test
         run: |
-          docker buildx build --load -t proofolio-backend:test -f backend/Dockerfile.prod \
+          docker buildx build --load -t projvitrine-backend:test -f backend/Dockerfile.prod \
             --cache-from type=gha,scope=backend backend
-          docker buildx build --load -t proofolio-web:test -f frontend/Dockerfile \
+          docker buildx build --load -t projvitrine-web:test -f frontend/Dockerfile \
             --cache-from type=gha,scope=web frontend
 
       - name: Smoke test
         run: |
           set -eux
           docker network create smoke
-          docker run -d --name proofolio-backend --network smoke \
+          docker run -d --name projvitrine-backend --network smoke \
             -e SECRET_KEY=smoke-test-secret-key-long-enough-for-hs256 \
             -e DATABASE_URL=sqlite:////tmp/db.sqlite3 \
-            -e SITE_URL=https://proofolio.example \
-            -e INDEX_HTML_URL=http://proofolio-web:8080/index.html \
-            proofolio-backend:test
+            -e SITE_URL=https://projvitrine.example \
+            -e INDEX_HTML_URL=http://projvitrine-web:8080/index.html \
+            projvitrine-backend:test
           for i in $(seq 1 30); do
-            docker exec proofolio-backend python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/health/')" && break
+            docker exec projvitrine-backend python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/health/')" && break
             sleep 2
           done
-          docker run -d --name proofolio-web --network smoke -p 8080:8080 \
-            -e BACKEND_UPSTREAM=proofolio-backend:8000 \
-            -e SITE_URL=https://proofolio.example -e CANONICAL_HOST=proofolio.example \
-            -e VITE_BRAND_NAME='Proofolio & Co' -e SOCIAL_AUTH_GITHUB_KEY=client123 \
-            proofolio-web:test
+          docker run -d --name projvitrine-web --network smoke -p 8080:8080 \
+            -e BACKEND_UPSTREAM=projvitrine-backend:8000 \
+            -e SITE_URL=https://projvitrine.example -e CANONICAL_HOST=projvitrine.example \
+            -e VITE_BRAND_NAME='ProjVitrine & Co' -e SOCIAL_AUTH_GITHUB_KEY=client123 \
+            projvitrine-web:test
           for i in $(seq 1 15); do curl -fs http://127.0.0.1:8080/healthz && break; sleep 1; done
-          H="Host: proofolio.example"
-          curl -fs -H "$H" http://127.0.0.1:8080/ | grep -q '<title>Proofolio &amp; Co</title>'
+          H="Host: projvitrine.example"
+          curl -fs -H "$H" http://127.0.0.1:8080/ | grep -q '<title>ProjVitrine &amp; Co</title>'
           curl -fs -H "$H" http://127.0.0.1:8080/config.js | grep -q '"githubClientId": "client123"'
           curl -fs -H "$H" http://127.0.0.1:8080/api/health/ | grep -q '"ok"'
           curl -sI -H "$H" http://127.0.0.1:8080/portfolios/someone | grep -qi '^location: /u/someone'
           # the backend fetches index.html from the web container by its service name: no redirect
-          docker exec proofolio-backend python -c "import urllib.request; assert urllib.request.urlopen('http://proofolio-web:8080/index.html').status == 200"
+          docker exec projvitrine-backend python -c "import urllib.request; assert urllib.request.urlopen('http://projvitrine-web:8080/index.html').status == 200"
           # link-preview tags for a real portfolio page
-          docker exec proofolio-backend python manage.py shell -c "from django.contrib.auth.models import User; from backend.models import Profile; u = User.objects.create(username='smoke'); Profile.objects.create(user=u, full_name='Smoke Test', headline='Tester')"
+          docker exec projvitrine-backend python manage.py shell -c "from django.contrib.auth.models import User; from backend.models import Profile; u = User.objects.create(username='smoke'); Profile.objects.create(user=u, full_name='Smoke Test', headline='Tester')"
           curl -fs -H "$H" http://127.0.0.1:8080/u/smoke | grep -q '<title>Smoke Test · Tester</title>'
-          test "$(curl -s -o /dev/null -w '%{http_code} %{redirect_url}' -H 'Host: alxhof.kndev.org' http://127.0.0.1:8080/u/x)" = "301 https://proofolio.example/u/x"
+          test "$(curl -s -o /dev/null -w '%{http_code} %{redirect_url}' -H 'Host: alxhof.kndev.org' http://127.0.0.1:8080/u/x)" = "301 https://projvitrine.example/u/x"
           # unknown portfolio: Django 404s, nginx falls back to the app shell
           curl -fs -H "$H" http://127.0.0.1:8080/u/nobody | grep -q '<div id="root">'
 
       - name: Smoke test logs
         if: failure()
-        run: docker logs proofolio-backend; docker logs proofolio-web
+        run: docker logs projvitrine-backend; docker logs projvitrine-web
 
       - name: Log in to ghcr.io
         if: env.PUBLISH == 'true'
@@ -124,8 +124,8 @@ jobs:
           file: backend/Dockerfile.prod
           push: ${{ env.PUBLISH == 'true' }}
           tags: |
-            ${{ env.REGISTRY }}/proofolio-backend:latest
-            ${{ env.REGISTRY }}/proofolio-backend:${{ github.sha }}
+            ${{ env.REGISTRY }}/projvitrine-backend:latest
+            ${{ env.REGISTRY }}/projvitrine-backend:${{ github.sha }}
           labels: org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
           cache-from: type=gha,scope=backend
           cache-to: type=gha,mode=max,scope=backend
@@ -137,8 +137,8 @@ jobs:
           file: frontend/Dockerfile
           push: ${{ env.PUBLISH == 'true' }}
           tags: |
-            ${{ env.REGISTRY }}/proofolio-web:latest
-            ${{ env.REGISTRY }}/proofolio-web:${{ github.sha }}
+            ${{ env.REGISTRY }}/projvitrine-web:latest
+            ${{ env.REGISTRY }}/projvitrine-web:${{ github.sha }}
           labels: org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
           cache-from: type=gha,scope=web
           cache-to: type=gha,mode=max,scope=web

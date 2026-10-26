@@ -14,7 +14,7 @@ const list = (value) =>
     .map((item) => item.trim())
     .filter(Boolean)
 
-export const DEFAULT_BRAND = "Proofolio"
+export const DEFAULT_BRAND = "ProjVitrine"
 
 const config = {
   // Empty means "same origin as the site", which is how production is served.

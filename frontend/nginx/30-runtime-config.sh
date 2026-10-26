@@ -18,7 +18,7 @@ first() {
     done
 }
 
-BRAND=$(first "${VITE_BRAND_NAME:-}" "${BRAND_NAME:-}" "Proofolio")
+BRAND=$(first "${VITE_BRAND_NAME:-}" "${BRAND_NAME:-}" "ProjVitrine")
 SITE=$(first "${SITE_URL:-}" "${VITE_SITE_URL:-}" "${VITE_FRONTEND_URL:-}" "${SITE_DOMAIN:-}")
 LANG_LIST=$(first "${LANGS:-}" "${VITE_LANGS:-}" "en,fr,sv")
 

@@ -7,5 +7,5 @@ os.environ["DATABASE_URL"] = "sqlite://:memory:"
 
 from .settings import *  # noqa: E402,F403
 
-MEDIA_ROOT = tempfile.mkdtemp(prefix="proofolio-test-media-")
+MEDIA_ROOT = tempfile.mkdtemp(prefix="projvitrine-test-media-")
 PASSWORD_HASHERS = ["django.contrib.auth.hashers.MD5PasswordHasher"]
