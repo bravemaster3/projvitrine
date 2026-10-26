@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { render, screen, within } from "@testing-library/react"
+import { render, screen, waitFor, within } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { MemoryRouter, Route, Routes } from "react-router-dom"
 import i18n from "../lib/i18n"
@@ -73,7 +73,7 @@ describe("Portfolio page", () => {
     expect(screen.getByText("ALX · Cohort 16")).toBeInTheDocument()
     expect(screen.getByText("Open to collaborations")).toBeInTheDocument()
     expect(screen.getByText(/\/u\/bravemaster3$/)).toBeInTheDocument()
-    expect(document.title).toContain("Koffi Dodji Noumonvi")
+    await waitFor(() => expect(document.title).toContain("Koffi Dodji Noumonvi"))
   })
 
   it("features the flagged project first and filters the index by skill", async () => {
