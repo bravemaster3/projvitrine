@@ -1,7 +1,0 @@
-FROM node:20-alpine
-WORKDIR /usr/src/app
-COPY . .
-RUN npm install
-# Set environment variable for increased memory limit
-ENV NODE_OPTIONS="--max_old_space_size=4096"
-RUN npm run build

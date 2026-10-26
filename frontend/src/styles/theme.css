@@ -1,0 +1,49 @@
+/*
+ * Design tokens — the only place colors, radii and fonts are defined.
+ * Components use them through Tailwind (bg-surface, text-muted, rounded-card…).
+ * To re-theme: change --accent / --accent-dark (everything else derives).
+ */
+:root {
+  --accent: #0f766e;        /* teal, light theme */
+  --accent-dark: #2dd4bf;   /* teal, dark theme */
+
+  --bg: #f5f8f8;
+  --surface: #ffffff;
+  --chip: #edf2f2;
+  --text: #0b1f22;
+  --muted: #4b5e61;
+  --border: #dae3e4;
+  --danger: #b42318;
+  --on-accent: #ffffff;
+  --brand: var(--accent);
+  --code-bg: #0b1f22;
+  --code-text: #d7f3ef;
+
+  --accent-soft: color-mix(in oklab, var(--brand) 10%, var(--surface));
+  --accent-border: color-mix(in oklab, var(--brand) 32%, var(--surface));
+  --danger-soft: color-mix(in oklab, var(--danger) 10%, var(--surface));
+
+  --radius-card: 14px;
+  --radius-control: 10px;
+  --shadow-card: 0 1px 2px rgb(11 31 34 / 0.04), 0 4px 16px rgb(11 31 34 / 0.04);
+
+  --font-sans: "Inter Variable", "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  --bg: #091416;
+  --surface: #0f1f22;
+  --chip: #16292d;
+  --text: #e3eded;
+  --muted: #a1b3b5;
+  --border: #21363a;
+  --danger: #f97066;
+  --on-accent: #042420;
+  --brand: var(--accent-dark);
+  --code-bg: #050d0f;
+  --shadow-card: none;
+  color-scheme: dark;
+}

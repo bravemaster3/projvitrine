@@ -1,0 +1,17 @@
+# Local Postgres for development and for restoring the production dump.
+# Use with DATABASE_URL=postgres://proofolio:proofolio@localhost:5433/proofolio
+services:
+  db:
+    image: postgres:15-alpine
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_DB: proofolio
+      POSTGRES_USER: proofolio
+      POSTGRES_PASSWORD: proofolio
+    volumes:
+      - dev_postgres:/var/lib/postgresql/data
+      - ./backups:/backups
+
+volumes:
+  dev_postgres:

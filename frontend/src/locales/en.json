@@ -1,0 +1,113 @@
+{
+  "languages": { "en": "English", "fr": "Français", "sv": "Svenska" },
+  "theme": { "toggle": "Theme: {{mode}} (click to change)", "system": "system", "light": "light", "dark": "dark" },
+  "nav": {
+    "main": "Main", "explore": "Explore", "people": "People", "map": "Map", "about": "About",
+    "login": "Log in", "logout": "Log out", "addProject": "Add project", "account": "Your account",
+    "myPortfolio": "My portfolio", "dashboard": "Dashboard", "settings": "Profile settings",
+    "language": "Language", "menu": "Menu", "skip": "Skip to content"
+  },
+  "footer": { "tagline": "Portfolios that show the work.", "nav": "Footer", "source": "Source code" },
+  "common": {
+    "loading": "Loading…", "close": "Close", "cancel": "Cancel", "save": "Save", "edit": "Edit", "delete": "Delete",
+    "all": "All", "copyLink": "Copy link", "linkCopied": "Link copied", "copyFailed": "Could not copy the link",
+    "originalLanguage": "Shown in the original language"
+  },
+  "errors": {
+    "notFound": "Page not found", "notFoundBody": "The link may be old, or the page has moved.",
+    "generic": "Something went wrong", "genericBody": "Please try again in a moment.", "backHome": "Back to explore", "reload": "Reload page"
+  },
+  "auth": {
+    "signingIn": "Signing you in…", "failed": "Signing in with GitHub failed. Please try again.",
+    "title": "Log in to {{brand}}", "body": "Use your GitHub account to create your portfolio and share your projects.",
+    "github": "Continue with GitHub", "scopeNote": "We only read your public profile and email address."
+  },
+  "explore": {
+    "title": "Explore projects", "subtitle": "Work shared by developers, researchers and learners from every community.",
+    "cta": "Create your portfolio", "learnMore": "How it works",
+    "projects": "projects", "builders": "builders", "communities": "communities", "filters": "Filters",
+    "search": "Search", "searchPlaceholder": "Search projects, tags or people", "community": "Community",
+    "allCommunities": "All communities", "sort": "Sort", "newest": "Newest", "mostAppreciated": "Most appreciated", "az": "A–Z",
+    "popular": "Popular:", "shown_one": "{{count}} project", "shown_other": "{{count}} projects",
+    "noResults": "No projects match", "noResultsHint": "Try fewer words or another tag."
+  },
+  "portfolio": {
+    "notFound": "Portfolio not found", "openTo": "Open to collaborations", "getInTouch": "Get in touch",
+    "permalink": "Permalink", "qr": "QR code for this portfolio",
+    "stats": { "projects": "Projects", "collaborators": "Collaborators", "appreciations": "Appreciations" },
+    "skills": "Skills & tools", "skillsHint": "Click a skill to filter the projects", "featured": "Featured work",
+    "allProjects": "All projects", "clearFilter": "Clear filter",
+    "ctaTitle": "Have a project in mind?", "ctaBody": "{{name}} is happy to hear about new ideas and collaborations.",
+    "downloadPdf": "Save as PDF", "editProfile": "Edit profile", "manageProjects": "Manage projects",
+    "empty": "No projects yet", "emptyMine": "Add your first project — import it from GitHub in a few clicks."
+  },
+  "profile": { "website": "Website" },
+  "project": {
+    "notFound": "Project not found", "caseStudy": "Case study", "code": "Code", "live": "Live", "with": "with",
+    "role": "Role", "period": "Period", "present": "present", "stack": "Tech stack", "authors": "Authors",
+    "appreciations": "Appreciations", "share": "Share this project", "edit": "Edit project",
+    "appreciationCount_one": "{{count}} appreciation", "appreciationCount_other": "{{count}} appreciations",
+    "appreciate": "Appreciate", "appreciated": "Appreciated",
+    "comments": "Comments", "addComment": "Add a comment", "postComment": "Post comment",
+    "loginToComment": "to join the conversation.", "hidden": "hidden", "hide": "Hide comment", "unhide": "Show comment",
+    "moreFrom": "More from {{name}}", "noStory": "No case study yet.", "writeStory": "Write one"
+  },
+  "links": { "code": "Code", "live": "Live site", "docs": "Documentation", "paper": "Paper / DOI", "video": "Video", "other": "Link" },
+  "people": {
+    "title": "People", "subtitle": "The builders behind the projects.", "search": "Search by name, place or headline",
+    "empty": "Nobody matches that search"
+  },
+  "community": { "label": "Community" },
+  "map": {
+    "title": "Map", "subtitle": "Where the community is.", "viewPortfolio": "View portfolio",
+    "count": "{{people}} people in {{countries}} countries"
+  },
+  "about": {
+    "eyebrow": "About {{brand}}", "title": "A portfolio that shows the work behind the CV",
+    "intro": "Add your projects once, tell the story behind each of them, and share one link that works everywhere — on your CV, LinkedIn, in an email or on paper.",
+    "cta": "Start with GitHub",
+    "points": {
+      "permalink": { "title": "One permanent link", "body": "Your portfolio lives at a short address with a QR code, ready for CVs and slides." },
+      "caseStudies": { "title": "Case studies, not just links", "body": "Each project gets its own page: role, period, stack, screenshots and the story in Markdown." },
+      "languages": { "title": "In several languages", "body": "The site speaks English, French and Swedish, and you can translate your own texts." },
+      "community": { "title": "Part of a community", "body": "Show which communities you belong to, find collaborators, and get inspired by others." }
+    },
+    "historyTitle": "Where it comes from",
+    "history": "The platform started as the ALX Hall of Fame, a showcase for ALX software engineering learners and alumni. It is now open to everyone — ALX members keep their community badge."
+  },
+  "dashboard": {
+    "title": "Your projects", "yourLink": "Your portfolio:", "viewPortfolio": "View portfolio",
+    "orderHint": "Order and stars decide what appears first on your portfolio.", "saveOrder": "Save order",
+    "orderSaved": "Order saved", "featured": "Featured", "notFeatured": "Not featured", "coauthored": "Co-authored — owned by @{{name}}",
+    "moveUp": "Move up", "moveDown": "Move down", "toggleFeatured": "Feature on portfolio",
+    "deleteTitle": "Delete this project?", "deleteBody": "“{{title}}” and its images will be removed permanently.",
+    "deleted": "Project deleted", "emptyTitle": "No projects yet", "emptyBody": "Import a repository from GitHub or start from scratch."
+  },
+  "editor": {
+    "newTitle": "Add a project", "editTitle": "Edit project", "subtitle": "Fields marked as required are needed to publish.",
+    "tabs": { "details": "Details", "story": "Case study", "translations": "Translations" },
+    "importTitle": "Import from a public GitHub repository", "importSearch": "Search your repositories", "noRepos": "No repository matches",
+    "title": "Title", "summary": "Short summary", "summaryHint": "One or two sentences shown on cards.",
+    "tags": "Tags", "tagsHint": "Comma-separated, e.g. Python, Leaflet, Peatlands", "code": "Code repository (required)", "live": "Live site",
+    "cover": "Cover image (required)", "chooseImage": "Choose image", "replaceImage": "Replace image",
+    "coauthors": "Co-authors", "coauthorsHint": "GitHub usernames, comma-separated. People who haven't joined yet get an invite.",
+    "featured": "Feature on my portfolio", "featuredHint": "Featured projects are shown first, with a large card.",
+    "role": "Your role", "rolePlaceholder": "e.g. Author & maintainer", "start": "Started", "end": "Ended", "endHint": "Leave empty if ongoing.",
+    "body": "Case study", "bodyHint": "Markdown: the problem, your approach, the outcome.", "preview": "Preview", "write": "Write", "nothing": "Nothing yet.",
+    "moreLinks": "More links", "linkKind": "Type", "addLink": "Add link", "linkError": "Check the links: each needs a valid URL.",
+    "writtenIn": "Written in", "translationsHint": "Empty translations are skipped; visitors then see the original text.",
+    "publish": "Publish", "created": "Project published", "saved": "Changes saved"
+  },
+  "settings": {
+    "title": "Profile settings", "welcome": "Welcome! Let's set up your portfolio", "subtitle": "This is what visitors see on your portfolio.",
+    "identity": "Identity", "identityHint": "Your name, link and the line under your name.",
+    "fullName": "Full name", "handle": "Portfolio address", "headline": "Headline", "headlineHint": "e.g. Full-stack geospatial developer",
+    "bio": "About you", "location": "Country", "openToWork": "Open to collaborations", "openToWorkHint": "Shows a badge on your portfolio.",
+    "links": "Links", "linksHint": "Only filled-in links are shown.",
+    "communities": "Communities", "communitiesHint": "Bootcamps, schools, employers or groups you belong to.",
+    "community": "Community", "membershipLabel": "Detail", "membershipPlaceholder": "e.g. Cohort 16", "addCommunity": "Add community",
+    "languages": "Languages", "languagesHint": "Write in one language and optionally translate your headline and bio.", "writeIn": "I write in",
+    "account": "Account", "accountHint": "Private, never shown on your portfolio.", "email": "Email", "emailHint": "Used only to contact you about your account.",
+    "saved": "Profile saved", "fixErrors": "Please fix the highlighted fields"
+  }
+}

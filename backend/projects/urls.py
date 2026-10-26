@@ -1,7 +1,8 @@
-from django.urls import path, include
+from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 from rest_framework_nested.routers import NestedDefaultRouter
-from .views import ProjectViewSet, CommentViewSet
+
+from .views import CommentViewSet, ProjectViewSet
 
 # Create a router and register the ProjectViewSet with it.
 router = DefaultRouter()

@@ -2,39 +2,30 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/png" href="/assets/logo.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ALX Hall of Fame - Showcase Your Talent, Inspire Others, Collaborate</title>
-
-    <!-- Primary Meta Tags -->
-    <meta name="title" content="ALX Hall of Fame - Showcase Your Talent, Inspire Others, Collaborate">
-    <meta name="description" content="ALX Hall of Fame is a platform for software developers to showcase their projects, find collaborators, and be inspired by the community. Join us to connect, learn, and grow together.">
-
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://alxhof.kndev.org/">
-    <meta property="og:title" content="ALX Hall of Fame - Showcase Your Talent, Inspire Others, Collaborate">
-    <meta property="og:description" content="ALX Hall of Fame is a platform for software developers to showcase their projects, find collaborators, and be inspired by the community. Join us to connect, learn, and grow together.">
-    <meta property="og:image" content="https://alxhof.kndev.org/assets/meta.jpg">
-
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://alxhof.kndev.org/">
-    <meta property="twitter:title" content="ALX Hall of Fame - Showcase Your Talent, Inspire Others, Collaborate">
-    <meta property="twitter:description" content="ALX Hall of Fame is a platform for software developers to showcase their projects, find collaborators, and be inspired by the community. Join us to connect, learn, and grow together.">
-    <meta property="twitter:image" content="https://alxhof.kndev.org/assets/meta.jpg">
-
-    <!-- Additional SEO Tags -->
-    <meta name="keywords" content="ALX Hall of Fame, software developers, showcase projects, find collaborators, developer community, software development, technology, collaboration, innovation">
-    <meta name="author" content="ALX Hall of Fame">
-    <meta name="robots" content="index, follow">
-    <meta name="language" content="English">
-
-    <!-- Canonical Tag -->
-    <link rel="canonical" href="https://alxhof.kndev.org/" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="theme-color" content="#0f766e" />
+    <!-- The brand placeholder is filled in when the container starts; /u/* pages get per-page tags from the server. -->
+    <title>__BRAND_NAME__</title>
+    <meta name="description" content="Portfolios and project case studies by developers and researchers." />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="__BRAND_NAME__" />
+    <meta property="og:title" content="__BRAND_NAME__" />
+    <meta property="og:description" content="Portfolios and project case studies by developers and researchers." />
+    <meta name="twitter:card" content="summary_large_image" />
+    <script>
+      // Apply the saved theme before first paint to avoid a flash.
+      try {
+        var mode = localStorage.getItem("theme") || "system"
+        var dark = mode === "dark" || (mode === "system" && matchMedia("(prefers-color-scheme: dark)").matches)
+        document.documentElement.dataset.theme = dark ? "dark" : "light"
+      } catch (e) {}
+    </script>
   </head>
-  <body class="m-0 p-0">
+  <body>
     <div id="root"></div>
+    <!-- Runtime settings (site URL, brand, GitHub client id), written by the web container. -->
+    <script src="/config.js"></script>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

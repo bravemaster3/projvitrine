@@ -1,0 +1,113 @@
+{
+  "languages": { "en": "English", "fr": "Français", "sv": "Svenska" },
+  "theme": { "toggle": "Tema: {{mode}} (klicka för att byta)", "system": "system", "light": "ljust", "dark": "mörkt" },
+  "nav": {
+    "main": "Huvudmeny", "explore": "Utforska", "people": "Personer", "map": "Karta", "about": "Om",
+    "login": "Logga in", "logout": "Logga ut", "addProject": "Lägg till projekt", "account": "Ditt konto",
+    "myPortfolio": "Min portfolio", "dashboard": "Översikt", "settings": "Profilinställningar",
+    "language": "Språk", "menu": "Meny", "skip": "Hoppa till innehållet"
+  },
+  "footer": { "tagline": "Portfolior som visar arbetet.", "nav": "Sidfot", "source": "Källkod" },
+  "common": {
+    "loading": "Laddar…", "close": "Stäng", "cancel": "Avbryt", "save": "Spara", "edit": "Redigera", "delete": "Ta bort",
+    "all": "Alla", "copyLink": "Kopiera länk", "linkCopied": "Länken kopierades", "copyFailed": "Det gick inte att kopiera länken",
+    "originalLanguage": "Visas på originalspråket"
+  },
+  "errors": {
+    "notFound": "Sidan hittades inte", "notFoundBody": "Länken kan vara gammal, eller så har sidan flyttats.",
+    "generic": "Något gick fel", "genericBody": "Försök igen om en stund.", "backHome": "Tillbaka till utforska", "reload": "Ladda om sidan"
+  },
+  "auth": {
+    "signingIn": "Loggar in…", "failed": "Inloggningen med GitHub misslyckades. Försök igen.",
+    "title": "Logga in på {{brand}}", "body": "Använd ditt GitHub-konto för att skapa din portfolio och dela dina projekt.",
+    "github": "Fortsätt med GitHub", "scopeNote": "Vi läser bara din offentliga profil och din e-postadress."
+  },
+  "explore": {
+    "title": "Utforska projekt", "subtitle": "Projekt delade av utvecklare, forskare och studenter från alla communities.",
+    "cta": "Skapa din portfolio", "learnMore": "Så fungerar det",
+    "projects": "projekt", "builders": "skapare", "communities": "communities", "filters": "Filter",
+    "search": "Sök", "searchPlaceholder": "Sök projekt, taggar eller personer", "community": "Community",
+    "allCommunities": "Alla communities", "sort": "Sortera", "newest": "Nyast", "mostAppreciated": "Mest uppskattade", "az": "A–Ö",
+    "popular": "Populära:", "shown_one": "{{count}} projekt", "shown_other": "{{count}} projekt",
+    "noResults": "Inga projekt matchar", "noResultsHint": "Prova färre ord eller en annan tagg."
+  },
+  "portfolio": {
+    "notFound": "Portfolion hittades inte", "openTo": "Öppen för samarbeten", "getInTouch": "Kontakta mig",
+    "permalink": "Permanent länk", "qr": "QR-kod för den här portfolion",
+    "stats": { "projects": "Projekt", "collaborators": "Samarbetspartner", "appreciations": "Uppskattningar" },
+    "skills": "Kompetenser och verktyg", "skillsHint": "Klicka på en kompetens för att filtrera projekten", "featured": "Utvalda projekt",
+    "allProjects": "Alla projekt", "clearFilter": "Rensa filtret",
+    "ctaTitle": "Har du ett projekt i åtanke?", "ctaBody": "{{name}} tar gärna emot nya idéer och samarbeten.",
+    "downloadPdf": "Spara som PDF", "editProfile": "Redigera profil", "manageProjects": "Hantera projekt",
+    "empty": "Inga projekt ännu", "emptyMine": "Lägg till ditt första projekt — importera det från GitHub med några klick."
+  },
+  "profile": { "website": "Webbplats" },
+  "project": {
+    "notFound": "Projektet hittades inte", "caseStudy": "Fallstudie", "code": "Kod", "live": "Live", "with": "med",
+    "role": "Roll", "period": "Period", "present": "pågående", "stack": "Teknik", "authors": "Upphovspersoner",
+    "appreciations": "Uppskattningar", "share": "Dela projektet", "edit": "Redigera projekt",
+    "appreciationCount_one": "{{count}} uppskattning", "appreciationCount_other": "{{count}} uppskattningar",
+    "appreciate": "Uppskatta", "appreciated": "Uppskattat",
+    "comments": "Kommentarer", "addComment": "Skriv en kommentar", "postComment": "Publicera",
+    "loginToComment": "för att delta i diskussionen.", "hidden": "dold", "hide": "Dölj kommentar", "unhide": "Visa kommentar",
+    "moreFrom": "Mer från {{name}}", "noStory": "Ingen fallstudie ännu.", "writeStory": "Skriv en"
+  },
+  "links": { "code": "Kod", "live": "Webbplats", "docs": "Dokumentation", "paper": "Artikel / DOI", "video": "Video", "other": "Länk" },
+  "people": {
+    "title": "Personer", "subtitle": "Personerna bakom projekten.", "search": "Sök på namn, plats eller titel",
+    "empty": "Ingen matchar sökningen"
+  },
+  "community": { "label": "Community" },
+  "map": {
+    "title": "Karta", "subtitle": "Var communityn finns.", "viewPortfolio": "Visa portfolio",
+    "count": "{{people}} personer i {{countries}} länder"
+  },
+  "about": {
+    "eyebrow": "Om {{brand}}", "title": "En portfolio som visar arbetet bakom CV:t",
+    "intro": "Lägg till dina projekt en gång, berätta historien bakom vart och ett och dela en enda länk som fungerar överallt — i CV:t, på LinkedIn, i ett mejl eller på papper.",
+    "cta": "Börja med GitHub",
+    "points": {
+      "permalink": { "title": "En permanent länk", "body": "Din portfolio får en kort adress och en QR-kod, redo för CV och presentationer." },
+      "caseStudies": { "title": "Fallstudier, inte bara länkar", "body": "Varje projekt får en egen sida: roll, period, teknik, skärmbilder och berättelsen i Markdown." },
+      "languages": { "title": "På flera språk", "body": "Webbplatsen finns på engelska, franska och svenska, och du kan översätta dina egna texter." },
+      "community": { "title": "En del av en community", "body": "Visa vilka communities du tillhör, hitta samarbetspartner och inspireras av andra." }
+    },
+    "historyTitle": "Bakgrund",
+    "history": "Plattformen började som ALX Hall of Fame, en utställning för studenter och alumner från ALX mjukvaruutvecklingsprogram. Nu är den öppen för alla — ALX-medlemmar behåller sitt community-märke."
+  },
+  "dashboard": {
+    "title": "Dina projekt", "yourLink": "Din portfolio:", "viewPortfolio": "Visa portfolio",
+    "orderHint": "Ordningen och stjärnorna avgör vad som visas först i din portfolio.", "saveOrder": "Spara ordning",
+    "orderSaved": "Ordningen sparades", "featured": "Utvald", "notFeatured": "Inte utvald", "coauthored": "Medförfattare — ägs av @{{name}}",
+    "moveUp": "Flytta upp", "moveDown": "Flytta ned", "toggleFeatured": "Lyft fram i portfolion",
+    "deleteTitle": "Ta bort projektet?", "deleteBody": "”{{title}}” och dess bilder tas bort permanent.",
+    "deleted": "Projektet togs bort", "emptyTitle": "Inga projekt ännu", "emptyBody": "Importera ett repository från GitHub eller börja från början."
+  },
+  "editor": {
+    "newTitle": "Lägg till projekt", "editTitle": "Redigera projekt", "subtitle": "Obligatoriska fält behövs för att publicera.",
+    "tabs": { "details": "Detaljer", "story": "Fallstudie", "translations": "Översättningar" },
+    "importTitle": "Importera från ett offentligt GitHub-repository", "importSearch": "Sök bland dina repositories", "noRepos": "Inget repository matchar",
+    "title": "Titel", "summary": "Kort sammanfattning", "summaryHint": "En eller två meningar som visas på korten.",
+    "tags": "Taggar", "tagsHint": "Kommaseparerade, t.ex. Python, Leaflet, Torvmarker", "code": "Kodrepository (obligatoriskt)", "live": "Webbplats",
+    "cover": "Omslagsbild (obligatorisk)", "chooseImage": "Välj bild", "replaceImage": "Byt bild",
+    "coauthors": "Medförfattare", "coauthorsHint": "GitHub-användarnamn, kommaseparerade. Personer som inte gått med ännu får en inbjudan.",
+    "featured": "Lyft fram i min portfolio", "featuredHint": "Utvalda projekt visas först, med ett stort kort.",
+    "role": "Din roll", "rolePlaceholder": "t.ex. Upphovsperson och förvaltare", "start": "Startade", "end": "Avslutades", "endHint": "Lämna tomt om pågående.",
+    "body": "Fallstudie", "bodyHint": "Markdown: problemet, ditt angreppssätt, resultatet.", "preview": "Förhandsvisa", "write": "Skriv", "nothing": "Inget ännu.",
+    "moreLinks": "Fler länkar", "linkKind": "Typ", "addLink": "Lägg till länk", "linkError": "Kontrollera länkarna: var och en behöver en giltig URL.",
+    "writtenIn": "Skrivet på", "translationsHint": "Tomma översättningar hoppas över; besökare ser då originaltexten.",
+    "publish": "Publicera", "created": "Projektet publicerades", "saved": "Ändringarna sparades"
+  },
+  "settings": {
+    "title": "Profilinställningar", "welcome": "Välkommen! Nu sätter vi upp din portfolio", "subtitle": "Det här ser besökarna i din portfolio.",
+    "identity": "Identitet", "identityHint": "Ditt namn, din länk och raden under ditt namn.",
+    "fullName": "Fullständigt namn", "handle": "Portfolioadress", "headline": "Titel", "headlineHint": "t.ex. Fullstack-utvecklare inom geodata",
+    "bio": "Om dig", "location": "Land", "openToWork": "Öppen för samarbeten", "openToWorkHint": "Visar ett märke i din portfolio.",
+    "links": "Länkar", "linksHint": "Bara ifyllda länkar visas.",
+    "communities": "Communities", "communitiesHint": "Bootcamps, skolor, arbetsgivare eller grupper du tillhör.",
+    "community": "Community", "membershipLabel": "Detalj", "membershipPlaceholder": "t.ex. Kohort 16", "addCommunity": "Lägg till community",
+    "languages": "Språk", "languagesHint": "Skriv på ett språk och översätt gärna din titel och presentation.", "writeIn": "Jag skriver på",
+    "account": "Konto", "accountHint": "Privat, visas aldrig i din portfolio.", "email": "E-post", "emailHint": "Används bara för att kontakta dig om ditt konto.",
+    "saved": "Profilen sparades", "fixErrors": "Rätta de markerade fälten"
+  }
+}

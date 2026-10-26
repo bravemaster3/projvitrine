@@ -1,7 +1,12 @@
 #!/bin/sh
+# Production entrypoint. Migrations are committed to git and only *applied* here;
+# never run makemigrations in production.
+set -e
 
-python manage.py makemigrations
 python manage.py migrate --no-input
 python manage.py collectstatic --no-input
 
-gunicorn backend.wsgi:application --bind 0.0.0.0:8000
+exec gunicorn backend.wsgi:application \
+  --bind 0.0.0.0:8000 \
+  --workers "${GUNICORN_WORKERS:-3}" \
+  --access-logfile -

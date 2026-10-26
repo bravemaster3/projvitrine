@@ -1,0 +1,113 @@
+{
+  "languages": { "en": "English", "fr": "Français", "sv": "Svenska" },
+  "theme": { "toggle": "Thème : {{mode}} (cliquer pour changer)", "system": "système", "light": "clair", "dark": "sombre" },
+  "nav": {
+    "main": "Principal", "explore": "Explorer", "people": "Membres", "map": "Carte", "about": "À propos",
+    "login": "Se connecter", "logout": "Se déconnecter", "addProject": "Ajouter un projet", "account": "Votre compte",
+    "myPortfolio": "Mon portfolio", "dashboard": "Tableau de bord", "settings": "Paramètres du profil",
+    "language": "Langue", "menu": "Menu", "skip": "Aller au contenu"
+  },
+  "footer": { "tagline": "Des portfolios qui montrent le travail.", "nav": "Pied de page", "source": "Code source" },
+  "common": {
+    "loading": "Chargement…", "close": "Fermer", "cancel": "Annuler", "save": "Enregistrer", "edit": "Modifier", "delete": "Supprimer",
+    "all": "Tous", "copyLink": "Copier le lien", "linkCopied": "Lien copié", "copyFailed": "Impossible de copier le lien",
+    "originalLanguage": "Affiché dans la langue d’origine"
+  },
+  "errors": {
+    "notFound": "Page introuvable", "notFoundBody": "Le lien est peut-être ancien, ou la page a été déplacée.",
+    "generic": "Une erreur est survenue", "genericBody": "Veuillez réessayer dans un instant.", "backHome": "Retour à l’exploration", "reload": "Recharger la page"
+  },
+  "auth": {
+    "signingIn": "Connexion en cours…", "failed": "La connexion avec GitHub a échoué. Veuillez réessayer.",
+    "title": "Se connecter à {{brand}}", "body": "Utilisez votre compte GitHub pour créer votre portfolio et partager vos projets.",
+    "github": "Continuer avec GitHub", "scopeNote": "Nous lisons uniquement votre profil public et votre adresse e-mail."
+  },
+  "explore": {
+    "title": "Explorer les projets", "subtitle": "Des projets partagés par des développeurs, chercheurs et apprenants de toutes les communautés.",
+    "cta": "Créer mon portfolio", "learnMore": "Comment ça marche",
+    "projects": "projets", "builders": "créateurs", "communities": "communautés", "filters": "Filtres",
+    "search": "Rechercher", "searchPlaceholder": "Rechercher des projets, tags ou personnes", "community": "Communauté",
+    "allCommunities": "Toutes les communautés", "sort": "Trier", "newest": "Plus récents", "mostAppreciated": "Plus appréciés", "az": "A–Z",
+    "popular": "Populaires :", "shown_one": "{{count}} projet", "shown_other": "{{count}} projets",
+    "noResults": "Aucun projet ne correspond", "noResultsHint": "Essayez avec moins de mots ou un autre tag."
+  },
+  "portfolio": {
+    "notFound": "Portfolio introuvable", "openTo": "Ouvert aux collaborations", "getInTouch": "Me contacter",
+    "permalink": "Lien permanent", "qr": "QR code de ce portfolio",
+    "stats": { "projects": "Projets", "collaborators": "Collaborateurs", "appreciations": "Appréciations" },
+    "skills": "Compétences et outils", "skillsHint": "Cliquez sur une compétence pour filtrer les projets", "featured": "Projets phares",
+    "allProjects": "Tous les projets", "clearFilter": "Effacer le filtre",
+    "ctaTitle": "Un projet en tête ?", "ctaBody": "{{name}} est ouvert aux nouvelles idées et collaborations.",
+    "downloadPdf": "Enregistrer en PDF", "editProfile": "Modifier le profil", "manageProjects": "Gérer les projets",
+    "empty": "Pas encore de projets", "emptyMine": "Ajoutez votre premier projet — importez-le depuis GitHub en quelques clics."
+  },
+  "profile": { "website": "Site web" },
+  "project": {
+    "notFound": "Projet introuvable", "caseStudy": "Étude de cas", "code": "Code", "live": "En ligne", "with": "avec",
+    "role": "Rôle", "period": "Période", "present": "aujourd’hui", "stack": "Technologies", "authors": "Auteurs",
+    "appreciations": "Appréciations", "share": "Partager ce projet", "edit": "Modifier le projet",
+    "appreciationCount_one": "{{count}} appréciation", "appreciationCount_other": "{{count}} appréciations",
+    "appreciate": "Apprécier", "appreciated": "Apprécié",
+    "comments": "Commentaires", "addComment": "Ajouter un commentaire", "postComment": "Publier",
+    "loginToComment": "pour participer à la discussion.", "hidden": "masqué", "hide": "Masquer le commentaire", "unhide": "Afficher le commentaire",
+    "moreFrom": "Autres projets de {{name}}", "noStory": "Pas encore d’étude de cas.", "writeStory": "En rédiger une"
+  },
+  "links": { "code": "Code", "live": "Site en ligne", "docs": "Documentation", "paper": "Article / DOI", "video": "Vidéo", "other": "Lien" },
+  "people": {
+    "title": "Membres", "subtitle": "Les personnes derrière les projets.", "search": "Rechercher par nom, lieu ou titre",
+    "empty": "Personne ne correspond à cette recherche"
+  },
+  "community": { "label": "Communauté" },
+  "map": {
+    "title": "Carte", "subtitle": "Où se trouve la communauté.", "viewPortfolio": "Voir le portfolio",
+    "count": "{{people}} personnes dans {{countries}} pays"
+  },
+  "about": {
+    "eyebrow": "À propos de {{brand}}", "title": "Un portfolio qui montre le travail derrière le CV",
+    "intro": "Ajoutez vos projets une fois, racontez l’histoire de chacun et partagez un seul lien qui fonctionne partout — sur votre CV, LinkedIn, dans un e-mail ou sur papier.",
+    "cta": "Commencer avec GitHub",
+    "points": {
+      "permalink": { "title": "Un lien permanent", "body": "Votre portfolio a une adresse courte et un QR code, prêts pour vos CV et présentations." },
+      "caseStudies": { "title": "Des études de cas, pas seulement des liens", "body": "Chaque projet a sa page : rôle, période, technologies, captures d’écran et récit en Markdown." },
+      "languages": { "title": "En plusieurs langues", "body": "Le site parle anglais, français et suédois, et vous pouvez traduire vos propres textes." },
+      "community": { "title": "Au sein d’une communauté", "body": "Montrez vos communautés, trouvez des collaborateurs et inspirez-vous des autres." }
+    },
+    "historyTitle": "D’où vient le projet",
+    "history": "La plateforme a commencé comme ALX Hall of Fame, une vitrine pour les apprenants et diplômés du programme d’ingénierie logicielle ALX. Elle est désormais ouverte à tous — les membres ALX conservent leur badge de communauté."
+  },
+  "dashboard": {
+    "title": "Vos projets", "yourLink": "Votre portfolio :", "viewPortfolio": "Voir le portfolio",
+    "orderHint": "L’ordre et les étoiles déterminent ce qui apparaît en premier sur votre portfolio.", "saveOrder": "Enregistrer l’ordre",
+    "orderSaved": "Ordre enregistré", "featured": "Mis en avant", "notFeatured": "Non mis en avant", "coauthored": "Co-écrit — appartient à @{{name}}",
+    "moveUp": "Monter", "moveDown": "Descendre", "toggleFeatured": "Mettre en avant sur le portfolio",
+    "deleteTitle": "Supprimer ce projet ?", "deleteBody": "« {{title}} » et ses images seront supprimés définitivement.",
+    "deleted": "Projet supprimé", "emptyTitle": "Pas encore de projets", "emptyBody": "Importez un dépôt depuis GitHub ou partez de zéro."
+  },
+  "editor": {
+    "newTitle": "Ajouter un projet", "editTitle": "Modifier le projet", "subtitle": "Les champs obligatoires sont nécessaires pour publier.",
+    "tabs": { "details": "Détails", "story": "Étude de cas", "translations": "Traductions" },
+    "importTitle": "Importer depuis un dépôt GitHub public", "importSearch": "Rechercher vos dépôts", "noRepos": "Aucun dépôt ne correspond",
+    "title": "Titre", "summary": "Résumé court", "summaryHint": "Une ou deux phrases affichées sur les cartes.",
+    "tags": "Tags", "tagsHint": "Séparés par des virgules, ex. Python, Leaflet, Tourbières", "code": "Dépôt de code (obligatoire)", "live": "Site en ligne",
+    "cover": "Image de couverture (obligatoire)", "chooseImage": "Choisir une image", "replaceImage": "Remplacer l’image",
+    "coauthors": "Co-auteurs", "coauthorsHint": "Noms d’utilisateur GitHub, séparés par des virgules. Les personnes pas encore inscrites reçoivent une invitation.",
+    "featured": "Mettre en avant sur mon portfolio", "featuredHint": "Les projets mis en avant apparaissent en premier, en grand format.",
+    "role": "Votre rôle", "rolePlaceholder": "ex. Auteur et mainteneur", "start": "Début", "end": "Fin", "endHint": "Laisser vide si en cours.",
+    "body": "Étude de cas", "bodyHint": "Markdown : le problème, votre approche, le résultat.", "preview": "Aperçu", "write": "Écrire", "nothing": "Rien pour l’instant.",
+    "moreLinks": "Autres liens", "linkKind": "Type", "addLink": "Ajouter un lien", "linkError": "Vérifiez les liens : chacun doit avoir une URL valide.",
+    "writtenIn": "Rédigé en", "translationsHint": "Les traductions vides sont ignorées ; les visiteurs voient alors le texte d’origine.",
+    "publish": "Publier", "created": "Projet publié", "saved": "Modifications enregistrées"
+  },
+  "settings": {
+    "title": "Paramètres du profil", "welcome": "Bienvenue ! Configurons votre portfolio", "subtitle": "Voici ce que les visiteurs voient sur votre portfolio.",
+    "identity": "Identité", "identityHint": "Votre nom, votre lien et la ligne sous votre nom.",
+    "fullName": "Nom complet", "handle": "Adresse du portfolio", "headline": "Titre", "headlineHint": "ex. Développeur géospatial full-stack",
+    "bio": "À propos de vous", "location": "Pays", "openToWork": "Ouvert aux collaborations", "openToWorkHint": "Affiche un badge sur votre portfolio.",
+    "links": "Liens", "linksHint": "Seuls les liens renseignés sont affichés.",
+    "communities": "Communautés", "communitiesHint": "Bootcamps, écoles, employeurs ou groupes dont vous faites partie.",
+    "community": "Communauté", "membershipLabel": "Précision", "membershipPlaceholder": "ex. Cohorte 16", "addCommunity": "Ajouter une communauté",
+    "languages": "Langues", "languagesHint": "Écrivez dans une langue et traduisez éventuellement votre titre et votre présentation.", "writeIn": "J’écris en",
+    "account": "Compte", "accountHint": "Privé, jamais affiché sur votre portfolio.", "email": "E-mail", "emailHint": "Utilisé uniquement pour vous contacter au sujet de votre compte.",
+    "saved": "Profil enregistré", "fixErrors": "Veuillez corriger les champs signalés"
+  }
+}

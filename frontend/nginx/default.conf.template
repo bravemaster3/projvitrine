@@ -1,0 +1,87 @@
+# Rendered at container start by the nginx image (envsubst on ${...} variables).
+upstream backend {
+    server ${BACKEND_UPSTREAM};
+}
+
+# Keep the original scheme when running behind Coolify/Traefik.
+map $http_x_forwarded_proto $forwarded_proto {
+    default $http_x_forwarded_proto;
+    ""      $scheme;
+}
+
+server {
+    listen 8080;
+    server_name _;
+    client_max_body_size 20m;
+    # Relative Location headers: behind Coolify's proxy nginx must not add its own port (8080).
+    absolute_redirect off;
+    root /usr/share/nginx/html;
+
+    # Optional 301 from legacy domains to CANONICAL_HOST (written by 40-canonical-host.sh).
+    include /etc/nginx/snippets/canonical*.conf;
+
+    # Runtime settings: must never be cached, so a restart with new variables takes effect.
+    location = /config.js {
+        add_header Cache-Control "no-store";
+        try_files /config.js =404;
+    }
+
+    location = /healthz {
+        access_log off;
+        default_type text/plain;
+        return 200 "ok";
+    }
+
+    location /api/ {
+        proxy_pass http://backend;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $forwarded_proto;
+        add_header Cache-Control "no-store";
+    }
+
+    # Django admin / API docs assets (served by WhiteNoise in the backend).
+    location /static/ {
+        proxy_pass http://backend;
+        proxy_set_header Host $host;
+        expires 30d;
+    }
+
+    location /media/ {
+        alias /media/;
+        expires 7d;
+        add_header Cache-Control "public";
+    }
+
+    # Vite assets have content hashes in their names.
+    location /assets/ {
+        try_files $uri =404;
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+    }
+
+    # Old portfolio links keep working.
+    location ~ ^/portfolios/(.+)$ {
+        return 301 /u/$1$is_args$args;
+    }
+
+    # Portfolio pages: Django fills in link-preview meta tags; any failure falls back to the SPA.
+    location ~ ^/u/ {
+        proxy_pass http://backend;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $forwarded_proto;
+        proxy_intercept_errors on;
+        error_page 404 500 502 503 504 = @spa;
+    }
+
+    location @spa {
+        add_header Cache-Control "no-cache";
+        try_files /index.html =404;
+    }
+
+    location / {
+        add_header Cache-Control "no-cache";
+        try_files $uri $uri/ /index.html;
+    }
+}
