@@ -1,3 +1,4 @@
 .env*
 ssh*
-code_djangoviz.sql
+backups
+.git

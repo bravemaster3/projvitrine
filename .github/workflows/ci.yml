@@ -47,4 +47,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: docker build -f backend/Dockerfile.prod backend
-      - run: docker build -f frontend/Dockerfile.prod frontend
+      - run: docker build -f frontend/Dockerfile frontend
+      - name: Compose files are valid
+        run: |
+          SECRET_KEY=x DB_PASSWORD=x docker compose -f docker-compose.coolify.yaml config -q
+          touch .env && docker compose -f docker-compose-prod.yaml config -q

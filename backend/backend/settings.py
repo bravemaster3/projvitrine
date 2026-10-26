@@ -18,9 +18,31 @@ env = environ.Env()
 if (REPO_ROOT / ".env").exists():
     environ.Env.read_env(REPO_ROOT / ".env")
 
-DEBUG = env.bool("DEBUG", default=False)
 
-SECRET_KEY = env("SECRET_KEY", default="")
+def env_str(name, default=""):
+    """Environment string; blank (as platforms like Coolify pass unset fields) means default.
+    Surrounding quotes pasted from an old .env file are removed."""
+    value = (env(name, default="") or "").strip().strip("'\"").strip()
+    return value or default
+
+
+def env_list(name, default):
+    value = env_str(name)
+    return [item.strip() for item in value.split(",") if item.strip()] if value else list(default)
+
+
+def env_int(name, default):
+    value = env_str(name)
+    return int(value) if value else default
+
+
+def env_bool(name, default):
+    value = env_str(name).lower()
+    return value in ("1", "true", "yes", "on") if value else default
+
+DEBUG = env_bool("DEBUG", False)
+
+SECRET_KEY = env_str("SECRET_KEY")
 if not SECRET_KEY:
     if not DEBUG:
         raise ImproperlyConfigured("SECRET_KEY must be set when DEBUG is false.")
@@ -29,20 +51,17 @@ if not SECRET_KEY:
 # Public URL of the site, used for links, meta tags and host defaults.
 # SITE_DOMAIN and VITE_FRONTEND_URL are the names used by the original deployment.
 SITE_URL = (
-    env("SITE_URL", default="") or env("SITE_DOMAIN", default="") or env("VITE_FRONTEND_URL", default="")
-    or "http://localhost:5173"
-).strip("'\"").rstrip("/")
+    env_str("SITE_URL") or env_str("SITE_DOMAIN") or env_str("VITE_FRONTEND_URL") or "http://localhost:5173"
+).rstrip("/")
 
 # Languages content can be written and translated in (first = default).
-LANGS = env.list("LANGS", default=env.list("VITE_LANGS", default=["en", "fr", "sv"]))
-DEFAULT_LANG = env("DEFAULT_LANG", default=env("VITE_DEFAULT_LANG", default=LANGS[0]))
+LANGS = env_list("LANGS", env_list("VITE_LANGS", ["en", "fr", "sv"]))
+DEFAULT_LANG = env_str("DEFAULT_LANG", env_str("VITE_DEFAULT_LANG", LANGS[0]))
 
 _site_host = urlparse(SITE_URL).hostname or "localhost"
 # "backend" is the service name other containers use to reach Django.
-ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=sorted({_site_host, "localhost", "127.0.0.1", "backend"}))
-CSRF_TRUSTED_ORIGINS = env.list(
-    "CSRF_TRUSTED_ORIGINS", default=[f"https://{_site_host}", f"http://{_site_host}"]
-)
+ALLOWED_HOSTS = env_list("ALLOWED_HOSTS", sorted({_site_host, "localhost", "127.0.0.1", "backend"}))
+CSRF_TRUSTED_ORIGINS = env_list("CSRF_TRUSTED_ORIGINS", [f"https://{_site_host}", f"http://{_site_host}"])
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -94,17 +113,17 @@ WSGI_APPLICATION = "backend.wsgi.application"
 
 # Database: DATABASE_URL wins; otherwise the DB_* variables used by the current
 # deployment; otherwise a local SQLite file for development.
-if env("DATABASE_URL", default=""):
-    DATABASES = {"default": env.db("DATABASE_URL")}
-elif env("DB_NAME", default=""):
+if env_str("DATABASE_URL"):
+    DATABASES = {"default": env.db_url_config(env_str("DATABASE_URL"))}
+elif env_str("DB_NAME"):
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.postgresql",
-            "NAME": env("DB_NAME"),
-            "USER": env("DB_USER", default=""),
-            "PASSWORD": env("DB_PASSWORD", default=""),
-            "HOST": env("DB_HOST", default="localhost"),
-            "PORT": env("DB_PORT", default="5432"),
+            "NAME": env_str("DB_NAME"),
+            "USER": env_str("DB_USER"),
+            "PASSWORD": env_str("DB_PASSWORD"),
+            "HOST": env_str("DB_HOST", "localhost"),
+            "PORT": env_str("DB_PORT", "5432"),
         }
     }
 else:
@@ -136,8 +155,8 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Behind a TLS-terminating proxy (nginx today, Coolify/Traefik later).
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
-USE_X_FORWARDED_HOST = env.bool("USE_X_FORWARDED_HOST", default=False)
-SESSION_COOKIE_SECURE = CSRF_COOKIE_SECURE = env.bool("SECURE_COOKIES", default=not DEBUG)
+USE_X_FORWARDED_HOST = env_bool("USE_X_FORWARDED_HOST", False)
+SESSION_COOKIE_SECURE = CSRF_COOKIE_SECURE = env_bool("SECURE_COOKIES", not DEBUG)
 # HTTPS redirect and HSTS are handled by the reverse proxy.
 
 # --- API & auth ---------------------------------------------------------------
@@ -149,12 +168,12 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=env.int("JWT_ACCESS_MINUTES", default=30)),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=env.int("JWT_REFRESH_DAYS", default=14)),
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=env_int("JWT_ACCESS_MINUTES", 30)),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=env_int("JWT_REFRESH_DAYS", 14)),
     "ROTATE_REFRESH_TOKENS": True,
     "BLACKLIST_AFTER_ROTATION": True,
     "ALGORITHM": "HS256",
-    "SIGNING_KEY": env("JWT_SIGNING_KEY", default=SECRET_KEY),
+    "SIGNING_KEY": env_str("JWT_SIGNING_KEY", SECRET_KEY),
     "AUTH_HEADER_TYPES": ("Bearer",),
     "USER_ID_FIELD": "id",
     "USER_ID_CLAIM": "user_id",
@@ -168,20 +187,17 @@ SWAGGER_SETTINGS = {
 }
 
 # GitHub OAuth app. The SOCIAL_AUTH_* names are accepted for the existing deployment.
-GITHUB_CLIENT_ID = env("GITHUB_CLIENT_ID", default=env("SOCIAL_AUTH_GITHUB_KEY", default=""))
-GITHUB_CLIENT_SECRET = env(
-    "GITHUB_CLIENT_SECRET", default=env("SOCIAL_AUTH_GITHUB_SECRET", default="")
-)
+GITHUB_CLIENT_ID = env_str("GITHUB_CLIENT_ID", env_str("SOCIAL_AUTH_GITHUB_KEY"))
+GITHUB_CLIENT_SECRET = env_str("GITHUB_CLIENT_SECRET", env_str("SOCIAL_AUTH_GITHUB_SECRET"))
 
 # Same-origin in production; list extra origins (e.g. the Vite dev server) here.
-CORS_ALLOWED_ORIGINS = env.list(
-    "CORS_ALLOWED_ORIGINS",
-    default=["http://localhost:5173", "http://127.0.0.1:5173"] if DEBUG else [],
+CORS_ALLOWED_ORIGINS = env_list(
+    "CORS_ALLOWED_ORIGINS", ["http://localhost:5173", "http://127.0.0.1:5173"] if DEBUG else []
 )
 
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
     "handlers": {"console": {"class": "logging.StreamHandler"}},
-    "root": {"handlers": ["console"], "level": env("LOG_LEVEL", default="INFO")},
+    "root": {"handlers": ["console"], "level": env_str("LOG_LEVEL", "INFO")},
 }

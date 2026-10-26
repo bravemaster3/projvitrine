@@ -1,0 +1,82 @@
+# Coolify: create a "Docker Compose" resource from this repository and point it
+# at this file. Set the variables in the resource's Environment Variables tab
+# (see docs/COOLIFY.md) and give the `web` service your domain(s), port 8080.
+services:
+  db:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-showcase}
+      POSTGRES_USER: ${DB_USER:-showcase}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.prod
+    restart: unless-stopped
+    environment:
+      SECRET_KEY: ${SECRET_KEY:?Set SECRET_KEY}
+      JWT_SIGNING_KEY: ${JWT_SIGNING_KEY:-}
+      DEBUG: ${DEBUG:-false}
+      SITE_URL: ${SITE_URL:-}
+      SITE_DOMAIN: ${SITE_DOMAIN:-}
+      ALLOWED_HOSTS: ${ALLOWED_HOSTS:-}
+      CSRF_TRUSTED_ORIGINS: ${CSRF_TRUSTED_ORIGINS:-}
+      DB_NAME: ${DB_NAME:-showcase}
+      DB_USER: ${DB_USER:-showcase}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_HOST: db
+      DB_PORT: "5432"
+      GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID:-}
+      GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET:-}
+      SOCIAL_AUTH_GITHUB_KEY: ${SOCIAL_AUTH_GITHUB_KEY:-}
+      SOCIAL_AUTH_GITHUB_SECRET: ${SOCIAL_AUTH_GITHUB_SECRET:-}
+      LANGS: ${LANGS:-}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      GUNICORN_WORKERS: ${GUNICORN_WORKERS:-3}
+    volumes:
+      - media_data:/usr/src/app/media
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/health/', timeout=4)"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
+
+  web:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_SITE_URL: ${SITE_URL:-}
+        VITE_FRONTEND_URL: ${VITE_FRONTEND_URL:-}
+        VITE_GITHUB_CLIENT_ID: ${VITE_GITHUB_CLIENT_ID:-}
+        VITE_BRAND_NAME: ${VITE_BRAND_NAME:-Showcase}
+        VITE_DEFAULT_LANG: ${VITE_DEFAULT_LANG:-en}
+        VITE_LANGS: ${LANGS:-en,fr,sv}
+    restart: unless-stopped
+    environment:
+      CANONICAL_HOST: ${CANONICAL_HOST:-}
+      BACKEND_UPSTREAM: backend:8000
+    expose:
+      - "8080"
+    volumes:
+      - media_data:/media:ro
+    depends_on:
+      backend:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
+  media_data:

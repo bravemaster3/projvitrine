@@ -10,7 +10,10 @@ const list = (value, fallback) =>
 const config = {
   // Empty means "same origin as the site", which is how production is served.
   apiUrl: (env.VITE_API_URL || "").replace(/\/$/, ""),
-  siteUrl: (env.VITE_SITE_URL || window.location.origin).replace(/\/$/, ""),
+  // VITE_FRONTEND_URL is the name used by the original deployment.
+  siteUrl: (env.VITE_SITE_URL || env.VITE_FRONTEND_URL || window.location.origin)
+    .replace(/^['"]|['"]$/g, "")
+    .replace(/\/$/, ""),
   githubClientId: env.VITE_GITHUB_CLIENT_ID || "",
   brandName: env.VITE_BRAND_NAME || "Showcase",
   defaultLang: env.VITE_DEFAULT_LANG || "en",
