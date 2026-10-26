@@ -75,7 +75,9 @@ jobs:
         run: |
           set -eux
           docker network create smoke
-          docker run -d --name projvitrine-backend --network smoke \
+          # a root-owned media directory, as a fresh volume can be on Coolify
+          MEDIA=$(mktemp -d) && sudo chown root:root "$MEDIA" && sudo chmod 755 "$MEDIA"
+          docker run -d --name projvitrine-backend --network smoke -v "$MEDIA":/usr/src/app/media \
             -e SECRET_KEY=smoke-test-secret-key-long-enough-for-hs256 \
             -e DATABASE_URL=sqlite:////tmp/db.sqlite3 \
             -e SITE_URL=https://projvitrine.example \
@@ -85,6 +87,9 @@ jobs:
             docker exec projvitrine-backend python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/health/')" && break
             sleep 2
           done
+          # gunicorn runs unprivileged and can write uploads to the media volume
+          test "$(docker exec projvitrine-backend stat -c %U /proc/1)" = app
+          docker exec -u app projvitrine-backend touch media/project_images/upload-check
           docker run -d --name projvitrine-web --network smoke -p 8080:8080 \
             -e BACKEND_UPSTREAM=projvitrine-backend:8000 \
             -e SITE_URL=https://projvitrine.example -e CANONICAL_HOST=projvitrine.example \
