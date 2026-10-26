@@ -16,6 +16,21 @@
   }
   body {
     min-height: 100vh;
+    /* Long names, URLs or tags wrap instead of widening the page. */
+    overflow-wrap: break-word;
+    /* Last resort: nothing may make the page scroll sideways on a phone.
+       (clip, unlike hidden, keeps the sticky header working.) */
+    overflow-x: clip;
+  }
+  h1,
+  h2,
+  h3 {
+    overflow-wrap: anywhere;
+  }
+  /* Grid items default to min-width: auto, so one long word in a card would
+     stretch a one-column (phone) grid beyond the screen. */
+  .grid > * {
+    min-width: 0;
   }
   :focus-visible {
     outline: 2px solid var(--brand);

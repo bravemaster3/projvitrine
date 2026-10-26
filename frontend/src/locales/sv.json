@@ -43,7 +43,7 @@
   },
   "profile": { "website": "Webbplats" },
   "project": {
-    "notFound": "Projektet hittades inte", "caseStudy": "Fallstudie", "code": "Kod", "live": "Live", "with": "med",
+    "notFound": "Projektet hittades inte", "caseStudy": "Visa projektet", "code": "Kod", "live": "Live", "with": "med", "andMore": "+{{count}} till",
     "role": "Roll", "period": "Period", "present": "pågående", "stack": "Teknik", "authors": "Upphovspersoner",
     "appreciations": "Uppskattningar", "share": "Dela projektet", "edit": "Redigera projekt",
     "appreciationCount_one": "{{count}} uppskattning", "appreciationCount_other": "{{count}} uppskattningar",

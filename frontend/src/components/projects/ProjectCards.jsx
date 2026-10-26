@@ -57,15 +57,17 @@ function Tags({ project, max = 4, size }) {
   )
 }
 
-/** "with Ana, Ben" — everyone credited except the person whose page this is. */
-function Collaborators({ project, exclude, className = "text-sm" }) {
+/** "with Ana, Ben +3 more": everyone credited except the person whose page this
+ * is. The project page lists them all. */
+function Collaborators({ project, exclude, max = 3, className = "text-sm" }) {
   const { t } = useTranslation()
   const people = collaborators(project, exclude)
   if (!people.length) return null
+  const hidden = people.length - max
   return (
     <p className={`text-muted ${className}`}>
       {t("project.with")}{" "}
-      {people.map((person, i) => (
+      {people.slice(0, hidden > 0 ? max : people.length).map((person, i) => (
         <span key={person.key}>
           {i > 0 && ", "}
           {person.handle ? (
@@ -77,6 +79,7 @@ function Collaborators({ project, exclude, className = "text-sm" }) {
           )}
         </span>
       ))}
+      {hidden > 0 && <span> {t("project.andMore", { count: hidden })}</span>}
     </p>
   )
 }
@@ -148,7 +151,7 @@ export function ProjectCard({ project, owner, showOwner = false }) {
         <Tags project={project} max={3} size="sm" />
         <div className="mt-auto flex flex-wrap items-center gap-4 border-t border-border pt-3 text-sm font-medium">
           {showOwner && author ? (
-            <Link to={`/u/${author.handle || author.username}`} className="flex items-center gap-2 hover:underline">
+            <Link to={`/u/${author.handle || author.username}`} className="flex min-w-0 items-center gap-2 hover:underline">
               <Avatar src={author.avatar} name={displayName(author)} size="xs" />
               <span className="truncate">{displayName(author)}</span>
             </Link>
