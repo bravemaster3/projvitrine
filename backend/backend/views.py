@@ -3,7 +3,8 @@ import logging
 import requests
 from django.conf import settings
 from django.contrib.auth.models import User
-from django.db import transaction
+from django.db import connection, transaction
+from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
@@ -11,8 +12,10 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from .models import Profile
-from .serializers import PublicUserSerializer, UserSerializer
+from projects.models import CoauthorInvite
+
+from .models import Community, Profile
+from .serializers import CommunitySerializer, PublicUserSerializer, UserSerializer
 
 logger = logging.getLogger(__name__)
 
@@ -22,7 +25,41 @@ GITHUB_TIMEOUT = 10
 
 
 def _users():
-    return User.objects.select_related("profile").order_by("id")
+    return (
+        User.objects.select_related("profile")
+        .prefetch_related("memberships__community", "profile__translations")
+        .order_by("id")
+    )
+
+
+def user_by_handle(handle):
+    """Find a user by portfolio handle, falling back to the GitHub username."""
+    handle = handle.lower()
+    return get_object_or_404(_users(), Q(profile__handle=handle) | Q(username=handle))
+
+
+@api_view(["GET"])
+def health(request):
+    """Liveness/readiness probe for the container platform."""
+    with connection.cursor() as cursor:
+        cursor.execute("select 1")
+    return Response({"status": "ok"})
+
+
+@api_view(["GET"])
+def communities(request):
+    queryset = Community.objects.annotate(member_count=Count("memberships")).order_by("name")
+    return Response(CommunitySerializer(queryset, many=True).data)
+
+
+@api_view(["GET"])
+def community_detail(request, slug):
+    community = get_object_or_404(Community.objects.annotate(member_count=Count("memberships")), slug=slug)
+    members = _users().filter(memberships__community=community)
+    return Response({
+        **CommunitySerializer(community).data,
+        "members": PublicUserSerializer(members, many=True).data,
+    })
 
 
 @api_view(["GET"])
@@ -74,6 +111,15 @@ def update_profile(request):
     serializer.is_valid(raise_exception=True)
     serializer.save()
     return Response(serializer.data)
+
+
+def claim_invites(user):
+    """Link a newly signed-in user to the projects they were invited to as co-author."""
+    for invite in CoauthorInvite.objects.filter(github_username=user.username, status=CoauthorInvite.PENDING):
+        invite.project.users.add(user)
+        invite.status = CoauthorInvite.ACCEPTED
+        invite.claimed_by = user
+        invite.save(update_fields=["status", "claimed_by"])
 
 
 def _github_get(path, token):
@@ -140,6 +186,7 @@ def github_callback(request):
             user.email = primary_email
             user.save(update_fields=["email"])
         profile.save()
+        claim_invites(user)
 
     refresh = RefreshToken.for_user(user)
     return Response(

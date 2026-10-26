@@ -1,4 +1,5 @@
 import pytest
+from django.contrib.auth.models import User
 from django.core.files.storage import default_storage
 
 from projects.models import Comment, Project
@@ -32,13 +33,25 @@ def test_anonymous_cannot_create(client):
     assert client.post("/api/projects/", project_payload(), format="multipart").status_code == 401
 
 
-def test_create_puts_owner_first_and_links_coauthors(auth_client, make_user):
+def test_create_puts_owner_first_and_invites_unknown_coauthors(auth_client, make_user):
     owner = make_user("bravemaster3")
     body = create_project(auth_client(owner))
     assert body["authors"] == "bravemaster3, pesho2k"
-    assert [u["username"] for u in body["users"]] == ["bravemaster3", "pesho2k"]
+    assert [u["username"] for u in body["users"]] == ["bravemaster3"]
+    assert body["invites"] == [{"github_username": "pesho2k", "status": "pending"}]
+    assert not User.objects.filter(username="pesho2k").exists()  # no placeholder account
     assert body["user"]["username"] == "bravemaster3"
     assert body["imgFile"].startswith("/media/project_images/")
+    assert body["slug"] == "huhola"
+    assert [link["kind"] for link in body["links"]] == ["code"]
+
+
+def test_existing_users_are_linked_directly(auth_client, make_user):
+    owner, friend = make_user("owner"), make_user("friend")
+    response = auth_client(owner).post("/api/projects/", project_payload(authors="@Friend"), format="multipart")
+    assert [u["username"] for u in response.json()["users"]] == ["owner", "friend"]
+    assert response.json()["invites"] == []
+    assert friend.projects.count() == 1
 
 
 def test_plain_post_works_like_create_with_token(auth_client, make_user):
@@ -63,14 +76,15 @@ def test_update_without_new_image_keeps_image(auth_client, make_user):
     assert response.json()["imgFile"] == created["imgFile"]
 
 
-def test_update_with_new_image_deletes_old_file(auth_client, make_user):
+def test_update_with_new_image_deletes_old_file(auth_client, make_user, django_capture_on_commit_callbacks):
     owner = make_user("owner")
     api = auth_client(owner)
     created = create_project(api)
     old_name = Project.objects.get(pk=created["id"]).imgFile.name
     assert default_storage.exists(old_name)
 
-    response = api.put(f"/api/projects/{created['id']}/", {"imgFile": make_image("new.png")}, format="multipart")
+    with django_capture_on_commit_callbacks(execute=True):
+        response = api.put(f"/api/projects/{created['id']}/", {"imgFile": make_image("new.png")}, format="multipart")
     assert response.status_code == 200
     new_name = Project.objects.get(pk=created["id"]).imgFile.name
     assert new_name != old_name

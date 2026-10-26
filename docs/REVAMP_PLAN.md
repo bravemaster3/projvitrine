@@ -94,38 +94,45 @@ Done when CI is green and the public API exposes no private data.
 ## Phase 2 — Additive data model
 
 Profile
-- [ ] `handle` (unique, defaults to GitHub username), `headline`, `website`,
+- [x] `handle` (unique, defaults to GitHub username), `headline`, `website`,
       `orcid`, `scholar`, `open_to_work`, `default_lang`.
 
 Project
-- [ ] `slug` (unique per owner, generated from title), `created_at`,
+- [x] `slug` (unique per owner, generated from title), `created_at`,
       `updated_at`, `featured`, `order`, `role`, `period_start`, `period_end`,
       `body` (markdown), `lang`.
-- [ ] `ProjectLink` (kind: code/live/docs/paper/video, url, label, order) —
+- [x] `ProjectLink` (kind: code/live/docs/paper/video, url, label, order) —
       data migration copies `githubRepos` and `liveProject`.
-- [ ] `ProjectImage` (image, caption, order); `imgFile` stays as the cover.
+- [x] `ProjectImage` (image, caption, order); `imgFile` stays as the cover.
 
 Communities
-- [ ] `Community` (name, slug, logo, website, description) and `Membership`
+- [x] `Community` (name, slug, logo, website, description) and `Membership`
       (user, community, label, start, end).
-- [ ] Data migration: every non-empty `cohort` becomes a membership in an
+- [x] Data migration: every non-empty `cohort` becomes a membership in an
       "ALX" community with label "Cohort N"; "Non-ALX" becomes no membership.
 
 Translations
-- [ ] `ProfileTranslation` (lang, headline, bio) and `ProjectTranslation`
+- [x] `ProfileTranslation` (lang, headline, bio) and `ProjectTranslation`
       (lang, title, summary, body). Fallback: owner's `default_lang`.
 
 Co-authors
-- [ ] `CoauthorInvite` (project, github_username, status, claimed_by). On
+- [x] `CoauthorInvite` (project, github_username, status, claimed_by). On
       login, matching invites are claimed and the user is linked to the project.
-- [ ] Data migration: existing placeholder users (no profile, never logged in)
-      become invites; real users are untouched.
+- [x] Data migration: existing placeholder users (no profile) get invites;
+      the 6 placeholder accounts themselves are kept until after the move
+      (deleting users is deferred to the post-migration cleanup).
 
 Comments
-- [ ] `hidden` flag for owner moderation.
+- [x] `hidden` flag for owner moderation.
 
 Done when all migrations apply cleanly to the restored production dump, with
-row counts and images unchanged.
+row counts and images unchanged. **Rehearsed 2026-10-26** on the production
+rows (SQLite): counts unchanged, 16 handles, 12 ALX memberships, 13 slugs,
+24 links, 6 invites. To repeat on Postgres with Docker once available.
+
+API added: `/api/portfolio/<handle>/`, `/api/portfolio/<handle>/projects/<slug>/`,
+`/api/communities/`, `/api/communities/<slug>/`, `/api/health/`,
+`POST /api/projects/reorder/`, `POST /api/projects/<id>/comments/<id>/hide/`.
 
 ## Phase 3 — Design system & i18n shell
 

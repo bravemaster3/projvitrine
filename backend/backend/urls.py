@@ -7,6 +7,8 @@ from drf_yasg.views import get_schema_view
 from rest_framework import permissions
 from rest_framework_simplejwt.views import TokenRefreshView
 
+from projects import views as project_views
+
 from . import views
 
 schema_view = get_schema_view(
@@ -17,6 +19,11 @@ schema_view = get_schema_view(
 
 urlpatterns = [
     path("api/admin/", admin.site.urls),
+    path("api/health/", views.health, name="health"),
+    path("api/communities/", views.communities, name="communities"),
+    path("api/communities/<slug:slug>/", views.community_detail, name="community_detail"),
+    path("api/portfolio/<str:handle>/", project_views.portfolio, name="portfolio"),
+    path("api/portfolio/<str:handle>/projects/<str:slug>/", project_views.portfolio_project, name="portfolio_project"),
     path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     path("api/callback", views.github_callback, name="github_callback"),
     path("api/users", views.all_users, name="all_users"),

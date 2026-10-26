@@ -6,6 +6,7 @@ the repository root). See `.env.example` for the full list.
 """
 from datetime import timedelta
 from pathlib import Path
+from urllib.parse import urlparse
 
 import environ
 from django.core.exceptions import ImproperlyConfigured
@@ -25,11 +26,23 @@ if not SECRET_KEY:
         raise ImproperlyConfigured("SECRET_KEY must be set when DEBUG is false.")
     SECRET_KEY = "dev-only-insecure-secret-key"
 
-ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["localhost", "127.0.0.1"])
-CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=[])
+# Public URL of the site, used for links, meta tags and host defaults.
+# SITE_DOMAIN and VITE_FRONTEND_URL are the names used by the original deployment.
+SITE_URL = (
+    env("SITE_URL", default="") or env("SITE_DOMAIN", default="") or env("VITE_FRONTEND_URL", default="")
+    or "http://localhost:5173"
+).strip("'\"").rstrip("/")
 
-# Public URL of the frontend, used for links and meta tags.
-SITE_URL = env("SITE_URL", default="http://localhost:5173")
+# Languages content can be written and translated in (first = default).
+LANGS = env.list("LANGS", default=env.list("VITE_LANGS", default=["en", "fr", "sv"]))
+DEFAULT_LANG = env("DEFAULT_LANG", default=env("VITE_DEFAULT_LANG", default=LANGS[0]))
+
+_site_host = urlparse(SITE_URL).hostname or "localhost"
+# "backend" is the service name other containers use to reach Django.
+ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=sorted({_site_host, "localhost", "127.0.0.1", "backend"}))
+CSRF_TRUSTED_ORIGINS = env.list(
+    "CSRF_TRUSTED_ORIGINS", default=[f"https://{_site_host}", f"http://{_site_host}"]
+)
 
 INSTALLED_APPS = [
     "django.contrib.admin",
