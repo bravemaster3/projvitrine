@@ -4,8 +4,9 @@
 #
 #   sh restore-backup.sh <backup-dir> [<coolify-resource-uuid>]
 #
-# Containers are found by name: on Coolify they are called db-<uuid> and
-# backend-<uuid>; pass the uuid when several stacks run on the server.
+# Containers are found by name: on Coolify they are called proofolio-db-<uuid>
+# and proofolio-backend-<uuid>; on the droplet <project>-db-1 / -backend-1.
+# Pass the uuid when several Proofolio stacks run on the server.
 # Override with DB_CONTAINER=... BACKEND_CONTAINER=... if needed.
 #
 # WARNING: replaces the database contents of the target stack.
@@ -16,7 +17,12 @@ UUID=${2:-}
 [ -f "$BACKUP/db.dump" ] || { echo "no db.dump in $BACKUP"; exit 1; }
 
 find_container() {
-    matches=$(docker ps --format '{{.Names}}' | grep -E "(^|[-_])$1([-_]|$)" | grep -- "$UUID" || true)
+    names=$(docker ps --format '{{.Names}}')
+    # On a shared server, only ever consider Proofolio's own containers.
+    if printf '%s\n' "$names" | grep -q 'proofolio-'; then
+        names=$(printf '%s\n' "$names" | grep 'proofolio-')
+    fi
+    matches=$(printf '%s\n' "$names" | grep -E "(^|[-_])$1([-_]|$)" | grep -- "$UUID" || true)
     count=$(printf '%s\n' "$matches" | grep -c . || true)
     if [ "$count" -ne 1 ]; then
         echo "Could not pick a single '$1' container (found: ${matches:-none})." >&2
@@ -34,6 +40,16 @@ echo "backend container:  $BACKEND"
 if [ -f "$BACKUP/SHA256SUMS" ]; then
     (cd "$BACKUP" && sha256sum -c SHA256SUMS)
 fi
+
+# Refuse to touch a database that belongs to another app: it must be empty or
+# contain this app's tables.
+tables=$(docker exec "$DB" sh -c 'psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -At \
+    -c "select tablename from pg_tables where schemaname = current_schema()"' | tr '\n' ' ' | sed 's/^ *//; s/ *$//')
+case " $tables " in
+    "  ") echo "Target database is empty." ;;
+    *" projects_project "*) echo "Target database contains this app's tables." ;;
+    *) echo "Refusing: $DB holds tables that are not this app's ($tables)." >&2; exit 1 ;;
+esac
 
 printf 'This REPLACES the database in %s. Type "restore" to continue: ' "$DB"
 read -r answer

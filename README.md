@@ -1,112 +1,71 @@
+# Proofolio
 
-![ALX Hall of Fame](https://img.shields.io/badge/ALX-Hall%20of%20Fame-blue)
-![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
-![React](https://img.shields.io/badge/Frontend-React-blue)
-![Material-UI](https://img.shields.io/badge/Styling-Material--UI-blue)
-![Tailwind CSS](https://img.shields.io/badge/Styling-Tailwind%20CSS-blue)
-![Django](https://img.shields.io/badge/Backend-Django-green)
+Portfolios that show the work: add your projects once, tell the story behind
+each one, and share a single permanent link — on your CV, LinkedIn, in an email
+or on paper.
 
-# ALX Hall of Fame
+**Live:** https://proofolio.kndev.org · formerly the ALX Hall of Fame
+(alxhof.kndev.org redirects here; ALX members keep their community badge).
 
-ALX Hall of Fame serves as a repository for projects developed by ALX students and alumni. The goal is to inspire people, instigate creativity, and ignite collaboration.
+- **Portfolio page** at `/u/<handle>` with headline, links (GitHub, LinkedIn,
+  ORCID, Scholar…), a permalink QR code, skills filter, featured work and a
+  print-to-PDF layout.
+- **Case-study page** per project at `/u/<handle>/<project>`: role, period,
+  stack, screenshots, the story in Markdown, co-authors, comments.
+- **Import from GitHub** (public repositories; contributors become co-author
+  invites), communities, people directory and a map.
+- **English, French and Swedish**, light and dark themes, link previews for
+  LinkedIn/Slack, accessible components.
 
-## Table of Contents
+## Stack
 
-- [Description](#description)
-- [Features](#features)
-- [Installation](#installation)
-- [Usage](#usage)
-- [Contributing](#contributing)
-- [License](#license)
+| Part | Tech |
+|---|---|
+| Frontend | React 18, Vite, Tailwind with CSS-variable design tokens, Radix, react-i18next |
+| Backend | Django 5.2 LTS, Django REST Framework, SimpleJWT, GitHub OAuth |
+| Data | PostgreSQL 15 (SQLite for local development) |
+| Delivery | Docker images built by GitHub Actions, deployed with Coolify |
 
-## Description
+## Local development
 
-The ALX Hall of Fame is designed to be a central repository where ALX students and alumni can showcase their projects. This platform aims to inspire innovation and foster collaboration among developers.
+Requirements: Python 3.12, Node 22.
 
-## Features
+```sh
+# backend (SQLite by default; set DATABASE_URL for Postgres)
+cd backend
+python -m venv .venv && . .venv/bin/activate      # Windows: .venv\Scripts\activate
+pip install -r requirements-dev.txt
+DEBUG=true python manage.py migrate
+DEBUG=true python manage.py runserver
 
-- **Project Repository**: A place for students and alumni to upload and showcase their projects.
-- **Inspiration Hub**: Browse projects to get inspired and find new ideas.
-- **Collaboration Platform**: Connect with other developers to collaborate on projects.
+# frontend (proxies /api and /media to localhost:8000)
+cd frontend
+npm ci
+npm run dev                                         # http://localhost:5173
+```
 
-## Installation
+Copy `.env.example` to `.env` at the repository root for GitHub login and other
+settings. `docker compose -f docker-compose.dev.yaml up -d` starts a local
+Postgres if you want one.
 
-To get a local copy up and running, follow these simple steps.
+## Tests
 
-### Prerequisites
+```sh
+cd backend && pytest && ruff check .
+cd frontend && npm test && npm run lint
+```
 
-- Node.js
-- npm (Node Package Manager)
-- Python
-- Django
+CI runs both, checks that migrations are committed, builds the images and, on
+`main`, publishes them to `ghcr.io` and triggers a Coolify deploy.
 
-### Backend Setup
+## Deployment
 
-1. Clone the repository:
+See [docs/COOLIFY.md](docs/COOLIFY.md). Nothing is built on the server; all
+settings are environment variables (see `.env.example`), and the web container
+reads its settings at start-up, so changing the domain or brand needs only a restart.
 
-   ```sh
-   git clone https://github.com/bravemaster3/alx-hall-of-fame.git
-   cd alx-hall-of-fame
-   ```
-
-2. Create and activate a virtual environment:
-
-   ```sh
-   python -m venv venv
-   source venv/bin/activate   # On Windows: venv\Scripts\activate
-   ```
-
-3. Install backend dependencies:
-
-   ```sh
-   pip install -r requirements.txt
-   ```
-
-4. Run the Django server:
-   ```sh
-   python manage.py migrate
-   python manage.py runserver
-   ```
-
-### Frontend Setup
-
-1. Navigate to the `frontend` directory:
-
-   ```sh
-   cd frontend
-   ```
-
-2. Install frontend dependencies:
-
-   ```sh
-   npm install
-   ```
-
-3. Start the React development server:
-   ```sh
-   npm start
-   ```
-
-## Usage
-
-1. Open your browser and navigate to `http://localhost:8000` to view the backend.
-2. Navigate to `http://localhost:3000` to view the frontend.
-
-### Adding a Project
-
-1. Click on the "Add Project" button.
-2. Fill in the project details and submit.
-
-## Contributing
-
-Contributions are what make the open source community such an amazing place to be learn, inspire, and create. Any contributions you make are **greatly appreciated**.
-
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+The roadmap is in [docs/REVAMP_PLAN.md](docs/REVAMP_PLAN.md).
 
 ## License
 
-Distributed under the MIT License. See `LICENSE` for more information.
+MIT

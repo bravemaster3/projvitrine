@@ -13,10 +13,18 @@ server {
     listen 8080;
     server_name _;
     client_max_body_size 20m;
+    # Relative Location headers: behind Coolify's proxy nginx must not add its own port (8080).
+    absolute_redirect off;
     root /usr/share/nginx/html;
 
     # Optional 301 from legacy domains to CANONICAL_HOST (written by 40-canonical-host.sh).
     include /etc/nginx/snippets/canonical*.conf;
+
+    # Runtime settings: must never be cached, so a restart with new variables takes effect.
+    location = /config.js {
+        add_header Cache-Control "no-store";
+        try_files /config.js =404;
+    }
 
     location = /healthz {
         access_log off;

@@ -1,9 +1,6 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-// Default used by %VITE_BRAND_NAME% in index.html when the variable is not set.
-process.env.VITE_BRAND_NAME ||= 'Showcase'
-
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],

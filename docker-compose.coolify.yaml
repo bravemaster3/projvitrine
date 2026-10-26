@@ -1,26 +1,34 @@
-# Coolify: create a "Docker Compose" resource from this repository and point it
-# at this file. Set the variables in the resource's Environment Variables tab
-# (see docs/COOLIFY.md) and give the `web` service your domain(s), port 8080.
+# Coolify: "Docker Compose" resource from this repository, compose file
+# /docker-compose.coolify.yaml. Nothing is built on the server: the images are
+# built by GitHub Actions and pulled from GitHub's container registry.
+# Set variables in the resource's Environment Variables tab (docs/COOLIFY.md)
+# and give `proofolio-web` the domain(s), port 8080.
+#
+# Service names are prefixed so they cannot clash with other stacks on the same
+# server (e.g. another app's `db`), even on a shared Docker network.
 services:
-  db:
+  proofolio-db:
     image: postgres:15-alpine
     restart: unless-stopped
     environment:
-      POSTGRES_DB: ${DB_NAME:-showcase}
-      POSTGRES_USER: ${DB_USER:-showcase}
+      POSTGRES_DB: ${DB_NAME:-proofolio}
+      POSTGRES_USER: ${DB_USER:-proofolio}
       POSTGRES_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD}
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - proofolio_postgres:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 10s
       timeout: 5s
       retries: 10
+    deploy:
+      resources:
+        limits:
+          memory: 256M
 
-  backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile.prod
+  proofolio-backend:
+    image: ${BACKEND_IMAGE:-ghcr.io/bravemaster3/proofolio-backend}:${IMAGE_TAG:-latest}
+    pull_policy: always
     restart: unless-stopped
     environment:
       SECRET_KEY: ${SECRET_KEY:?Set SECRET_KEY}
@@ -30,23 +38,24 @@ services:
       SITE_DOMAIN: ${SITE_DOMAIN:-}
       ALLOWED_HOSTS: ${ALLOWED_HOSTS:-}
       CSRF_TRUSTED_ORIGINS: ${CSRF_TRUSTED_ORIGINS:-}
-      DB_NAME: ${DB_NAME:-showcase}
-      DB_USER: ${DB_USER:-showcase}
+      DB_NAME: ${DB_NAME:-proofolio}
+      DB_USER: ${DB_USER:-proofolio}
       DB_PASSWORD: ${DB_PASSWORD}
-      DB_HOST: db
+      DB_HOST: proofolio-db
       DB_PORT: "5432"
       GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID:-}
       GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET:-}
       SOCIAL_AUTH_GITHUB_KEY: ${SOCIAL_AUTH_GITHUB_KEY:-}
       SOCIAL_AUTH_GITHUB_SECRET: ${SOCIAL_AUTH_GITHUB_SECRET:-}
+      VITE_BRAND_NAME: ${VITE_BRAND_NAME:-Proofolio}
       LANGS: ${LANGS:-}
-      VITE_BRAND_NAME: ${VITE_BRAND_NAME:-Showcase}
+      INDEX_HTML_URL: http://proofolio-web:8080/index.html
       LOG_LEVEL: ${LOG_LEVEL:-INFO}
-      GUNICORN_WORKERS: ${GUNICORN_WORKERS:-3}
+      GUNICORN_WORKERS: ${GUNICORN_WORKERS:-2}
     volumes:
-      - media_data:/usr/src/app/media
+      - proofolio_media:/usr/src/app/media
     depends_on:
-      db:
+      proofolio-db:
         condition: service_healthy
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/health/', timeout=4)"]
@@ -54,30 +63,39 @@ services:
       timeout: 5s
       retries: 5
       start_period: 40s
+    deploy:
+      resources:
+        limits:
+          memory: 384M
 
-  web:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-      args:
-        VITE_SITE_URL: ${SITE_URL:-}
-        VITE_FRONTEND_URL: ${VITE_FRONTEND_URL:-}
-        VITE_GITHUB_CLIENT_ID: ${VITE_GITHUB_CLIENT_ID:-}
-        VITE_BRAND_NAME: ${VITE_BRAND_NAME:-Showcase}
-        VITE_DEFAULT_LANG: ${VITE_DEFAULT_LANG:-en}
-        VITE_LANGS: ${LANGS:-en,fr,sv}
+  proofolio-web:
+    image: ${WEB_IMAGE:-ghcr.io/bravemaster3/proofolio-web}:${IMAGE_TAG:-latest}
+    pull_policy: always
     restart: unless-stopped
     environment:
+      BACKEND_UPSTREAM: proofolio-backend:8000
       CANONICAL_HOST: ${CANONICAL_HOST:-}
-      BACKEND_UPSTREAM: backend:8000
+      SITE_URL: ${SITE_URL:-}
+      SITE_DOMAIN: ${SITE_DOMAIN:-}
+      VITE_FRONTEND_URL: ${VITE_FRONTEND_URL:-}
+      VITE_GITHUB_CLIENT_ID: ${VITE_GITHUB_CLIENT_ID:-}
+      GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID:-}
+      SOCIAL_AUTH_GITHUB_KEY: ${SOCIAL_AUTH_GITHUB_KEY:-}
+      VITE_BRAND_NAME: ${VITE_BRAND_NAME:-Proofolio}
+      VITE_SOURCE_URL: ${VITE_SOURCE_URL:-}
+      LANGS: ${LANGS:-}
     expose:
       - "8080"
     volumes:
-      - media_data:/media:ro
+      - proofolio_media:/media:ro
     depends_on:
-      backend:
+      proofolio-backend:
         condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 64M
 
 volumes:
-  postgres_data:
-  media_data:
+  proofolio_postgres:
+  proofolio_media:

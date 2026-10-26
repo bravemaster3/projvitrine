@@ -26,6 +26,7 @@ services:
     environment:
       DB_HOST: db
       DB_PORT: "5432"
+      INDEX_HTML_URL: http://web:8080/index.html
     volumes:
       - media_data:/usr/src/app/media
     depends_on:
@@ -37,15 +38,10 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-      args:
-        VITE_SITE_URL: ${SITE_URL:-}
-        VITE_FRONTEND_URL: ${VITE_FRONTEND_URL:-}
-        VITE_GITHUB_CLIENT_ID: ${VITE_GITHUB_CLIENT_ID:-}
-        VITE_BRAND_NAME: ${VITE_BRAND_NAME:-Showcase}
-        VITE_DEFAULT_LANG: ${VITE_DEFAULT_LANG:-en}
-        VITE_LANGS: ${LANGS:-en,fr,sv}
+    env_file:
+      - .env
     environment:
-      CANONICAL_HOST: ${CANONICAL_HOST:-}
+      BACKEND_UPSTREAM: backend:8000
     ports:
       - "80:8080"
     volumes:

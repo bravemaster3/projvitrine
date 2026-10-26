@@ -5,12 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="theme-color" content="#0f766e" />
-    <!-- Title, description and preview tags are replaced per page by the server for /u/* URLs. -->
-    <title>%VITE_BRAND_NAME%</title>
+    <!-- The brand placeholder is filled in when the container starts; /u/* pages get per-page tags from the server. -->
+    <title>__BRAND_NAME__</title>
     <meta name="description" content="Portfolios and project case studies by developers and researchers." />
     <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="%VITE_BRAND_NAME%" />
-    <meta property="og:title" content="%VITE_BRAND_NAME%" />
+    <meta property="og:site_name" content="__BRAND_NAME__" />
+    <meta property="og:title" content="__BRAND_NAME__" />
     <meta property="og:description" content="Portfolios and project case studies by developers and researchers." />
     <meta name="twitter:card" content="summary_large_image" />
     <script>
@@ -24,6 +24,8 @@
   </head>
   <body>
     <div id="root"></div>
+    <!-- Runtime settings (site URL, brand, GitHub client id), written by the web container. -->
+    <script src="/config.js"></script>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

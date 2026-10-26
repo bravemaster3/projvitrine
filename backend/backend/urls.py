@@ -12,7 +12,7 @@ from projects import views as project_views
 from . import meta, views
 
 schema_view = get_schema_view(
-    openapi.Info(title="Showcase API", default_version="v1", license=openapi.License(name="MIT")),
+    openapi.Info(title=f"{settings.BRAND_NAME} API", default_version="v1", license=openapi.License(name="MIT")),
     public=True,
     permission_classes=(permissions.AllowAny,),
 )

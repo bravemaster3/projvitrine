@@ -30,8 +30,8 @@ https://claude.ai/artifact/1mVPeeV5gfy5bDUCn96vJR
 | UI stack | Tailwind + CSS-variable tokens + Radix primitives; MUI removed | decided |
 | Languages | EN, FR, SV at launch; list configurable | decided |
 | GitHub access | Login: `read:user user:email`. Private repos: optional GitHub App, read-only, per-repo | decided |
-| Product name | working name "Showcase" (env `VITE_BRAND_NAME`) | **open** |
-| Domain / permalink | proposal `kndev.org/u/<handle>` | **open** |
+| Product name | **Proofolio** (env `VITE_BRAND_NAME`) | decided |
+| Domain / permalink | `proofolio.kndev.org/u/<handle>`; alxhof.kndev.org redirects | decided |
 | Extra login providers | email magic link + Google | proposed |
 
 ## Phase 0 — Safeguard the live data
@@ -205,7 +205,9 @@ Done when people without GitHub can join and be found.
 
 ## Phase 7 — Coolify migration & launch
 
-- [ ] New server with Coolify; connect the GitHub repo.
+- [x] Images built by GitHub Actions and published to ghcr.io; the server only pulls them
+      (shared with Fluxmonitor: prefixed service names, memory limits, guarded restore).
+- [ ] Coolify server (shared with Fluxmonitor); connect the GitHub repo.
 - [ ] Resources: Postgres (Coolify database), backend (Dockerfile.prod),
       frontend (static build), persistent volume for media; env vars per
       resource from `.env.example`.
@@ -228,13 +230,13 @@ backup restore has been tested.
 | `SECRET_KEY`, `JWT_SIGNING_KEY` | backend | — |
 | `DEBUG` | backend | `false` |
 | `DB_NAME`, `DB_USER`, `DB_PASSWORD`, `DB_HOST`, `DB_PORT` | backend | — |
-| `ALLOWED_HOSTS`, `CORS_ALLOWED_ORIGINS`, `CSRF_TRUSTED_ORIGINS` | backend | `kndev.org` |
-| `SITE_URL` | backend (OG tags, emails) | `https://kndev.org` |
+| `ALLOWED_HOSTS`, `CSRF_TRUSTED_ORIGINS` | backend | derived from `SITE_URL` |
 | `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET` | backend | — |
 | `GITHUB_APP_ID`, `GITHUB_APP_PRIVATE_KEY` | backend (private repos) | — |
 | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | backend | — |
 | `EMAIL_URL` | backend (magic links) | — |
-| `VITE_API_URL`, `VITE_SITE_URL` | frontend build | `https://kndev.org` |
-| `VITE_BRAND_NAME` | frontend build | `Showcase` |
-| `VITE_DEFAULT_LANG`, `VITE_LANGS` | frontend build | `en`, `en,fr,sv` |
-| `VITE_GITHUB_CLIENT_ID` | frontend build | — |
+| `SITE_URL` | backend + web container | `https://proofolio.kndev.org` |
+| `VITE_BRAND_NAME` | web container (runtime) | `Proofolio` |
+| `LANGS` | backend + web container | `en,fr,sv` |
+| `VITE_GITHUB_CLIENT_ID` | web container (runtime) | — |
+| `CANONICAL_HOST` | web container | `proofolio.kndev.org` |
