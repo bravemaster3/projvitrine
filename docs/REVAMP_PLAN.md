@@ -136,41 +136,41 @@ API added: `/api/portfolio/<handle>/`, `/api/portfolio/<handle>/projects/<slug>/
 
 ## Phase 3 — Design system & i18n shell
 
-- [ ] Remove MUI/Emotion; turn Tailwind preflight back on; delete the
+- [x] Remove MUI/Emotion; turn Tailwind preflight back on; delete the
       Figma-export breakpoints and the dead `App.css`.
-- [ ] `src/styles/theme.css`: tokens (`--bg`, `--surface`, `--chip`, `--text`,
+- [x] `src/styles/theme.css`: tokens (`--bg`, `--surface`, `--chip`, `--text`,
       `--muted`, `--border`, `--accent`, `--accent-soft`, `--accent-border`,
       `--on-accent`, `--danger`, `--radius`, fonts) for light and dark; soft
       shades derived with `color-mix()` from `--accent`.
-- [ ] `tailwind.config.js` maps utility names to the variables only
+- [x] `tailwind.config.js` maps utility names to the variables only
       (`bg-surface`, `text-muted`, `rounded-card`…).
-- [ ] Components: Button, IconButton, Chip, Badge, Card, Input, Textarea,
+- [x] Components: Button, IconButton, Chip, Badge, Card, Input, Textarea,
       Select, Dialog, DropdownMenu, Tabs, Toast, Skeleton, EmptyState, Avatar.
-- [ ] Theme toggle (system / light / dark), saved per user.
-- [ ] react-i18next: `locales/{en,fr,sv}/*.json`; language detection order:
+- [x] Theme toggle (system / light / dark), saved per user.
+- [x] react-i18next: `locales/{en,fr,sv}/*.json`; language detection order:
       URL `?lang=` → saved choice → browser → `VITE_DEFAULT_LANG`. A missing key
       in FR or SV falls back to EN.
-- [ ] Dates and numbers through `Intl` for the active language.
-- [ ] New layout: header, footer, language switcher, mobile nav.
+- [x] Dates and numbers through `Intl` for the active language.
+- [x] New layout: header, footer, language switcher, mobile nav.
 
 Done when no component contains a hex color or user-facing literal string.
 
 ## Phase 4 — Public pages (the CV permalink)
 
-- [ ] `/u/:handle` portfolio: header (avatar, name, headline, location,
+- [x] `/u/:handle` portfolio: header (avatar, name, headline, location,
       open-to-work, communities, links), permalink card with copy + QR,
       skills strip that filters, featured projects, project index,
       optional sections (publications, experience), contact band.
-- [ ] `/u/:handle/:slug` case study: meta strip (role, period, language,
+- [x] `/u/:handle/:slug` case study: meta strip (role, period, language,
       license, stars), gallery, markdown body, how-it-works, sidebar (stack,
       authors, share, appreciations), more from the author.
-- [ ] Per-language content with "shown in original language" notice.
-- [ ] Print stylesheet → clean one-page PDF; "Download PDF" button.
-- [ ] Django view serves `index.html` with server-filled `<title>`,
+- [x] Per-language content with "shown in original language" notice.
+- [x] Print stylesheet → clean one-page PDF; "Download PDF" button.
+- [x] Django view serves `index.html` with server-filled `<title>`,
       description, Open Graph/Twitter tags, canonical and `hreflang` for `/u/*`.
-- [ ] Generated OG image per portfolio/project.
-- [ ] 301 redirects: `/portfolios/:user` → `/u/:handle`.
-- [ ] Lighthouse ≥ 95 on performance, accessibility and SEO for both pages.
+- [ ] Generated OG image per portfolio/project (avatar / cover used for now).
+- [x] 301 redirects: `/portfolios/:user` → `/u/:handle`.
+- [ ] Lighthouse ≥ 95 on performance, accessibility and SEO for both pages (to measure on the deployed site).
 
 Done when the CV link looks right in a browser, on a phone, as a LinkedIn
 preview and on paper.

@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import include, path
+from django.urls import include, path, re_path
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from rest_framework import permissions
@@ -9,7 +9,7 @@ from rest_framework_simplejwt.views import TokenRefreshView
 
 from projects import views as project_views
 
-from . import views
+from . import meta, views
 
 schema_view = get_schema_view(
     openapi.Info(title="Showcase API", default_version="v1", license=openapi.License(name="MIT")),
@@ -36,6 +36,9 @@ urlpatterns = [
     path("api/users/update/", views.update_profile, name="update_profile"),
     path("api/users_with_profiles/", views.get_all_users_with_profiles, name="get_all_users_with_profiles"),
     path("api/", include("projects.urls")),
+    # Portfolio pages with link-preview tags (nginx routes /u/* here).
+    re_path(r"^u/(?P<handle>[^/]+)/?$", meta.portfolio_page, name="portfolio_page"),
+    re_path(r"^u/(?P<handle>[^/]+)/(?P<slug>[^/]+)/?$", meta.project_page, name="project_page"),
     path("api/swagger/", schema_view.with_ui("swagger", cache_timeout=0), name="schema-swagger-ui"),
     path("api/redoc/", schema_view.with_ui("redoc", cache_timeout=0), name="schema-redoc"),
 ]

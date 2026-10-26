@@ -1,87 +1,80 @@
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  useLocation,
-} from "react-router-dom"
-import Navbar from "./navbar/Navbar"
-import Footer from "./footer/Footer"
-import Home from "./pages/Home"
-import About from "./pages/About"
-import Profile from "./pages/Profile"
-import ProfileEdit from "./pages/ProfileEdit"
-import Login from "./pages/Login"
-import UsersMap from "./pages/UsersMap"
+import { lazy, Suspense } from "react"
+import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router-dom"
+import { useEffect } from "react"
+import ErrorBoundary from "./components/layout/ErrorBoundary"
+import Layout from "./components/layout/Layout"
+import { PageSkeleton } from "./components/ui/Feedback"
+import { ToastProvider } from "./components/ui/Toast"
+import { AuthProvider } from "./lib/auth"
+import { ThemeProvider } from "./lib/theme"
+import Explore from "./pages/Explore"
 import Portfolio from "./pages/Portfolio"
-import { useEffect, useState } from "react"
-import People from "./pages/People"
-import { LOGOUT_EVENT } from "./lib/session"
+import { About, LegacyPortfolioRedirect, Login, NotFound, RequireAuth } from "./pages/StaticPages"
 
-const AppContent = () => {
-  const [user, setUser] = useState(() => {
-    const storedUser = localStorage.getItem("user")
-    return storedUser ? JSON.parse(storedUser) : { is_authenticated: false }
-  })
+// Heavier, less visited pages load on demand.
+const ProjectPage = lazy(() => import("./pages/ProjectPage"))
+const People = lazy(() => import("./pages/People"))
+const CommunityPage = lazy(() => import("./pages/People").then((m) => ({ default: m.CommunityPage })))
+const MapPage = lazy(() => import("./pages/MapPage"))
+const Dashboard = lazy(() => import("./pages/Dashboard"))
+const ProfileSettings = lazy(() => import("./pages/ProfileSettings"))
 
-  const location = useLocation()
-
-  // The session layer clears storage when a refresh fails; mirror that in state.
+function ScrollToTop() {
+  const { pathname } = useLocation()
   useEffect(() => {
-    const onLogout = () => setUser({ is_authenticated: false })
-    window.addEventListener(LOGOUT_EVENT, onLogout)
-    return () => window.removeEventListener(LOGOUT_EVENT, onLogout)
-  }, [])
-
-  // Define the routes that should not display the Navbar and Footer
-  const noNavbarFooterRoutes = ["/portfolios/:github_username"]
-  const noFooterRoutes = ["/map"]
-
-  // Check if the current route matches any of the routes in the noNavbarFooterRoutes array
-  const showNavbarFooter = !noNavbarFooterRoutes.some((route) =>
-    location.pathname.match(new RegExp(`^${route.replace(/:\w+/, "\\w+")}$`))
-  )
-
-  const showFooter = !noFooterRoutes.some((route) =>
-    location.pathname.match(new RegExp(`^${route.replace(/:\w+/, "\\w+")}$`))
-  )
-
-  return (
-    <div className="m-0 w-full min-h-screen bg-gray-100 dark:bg-dark-white flex flex-col justify-between">
-      {showNavbarFooter && <Navbar user={user} setUser={setUser} />}
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/profile/edit" element={<ProfileEdit />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/login" element={<Login setUser={setUser} />} />
-        <Route path="/map" element={<UsersMap />} />
-        <Route path="/people" element={<People />} />
-        <Route path="/portfolios/:github_username" element={<Portfolio />} />
-      </Routes>
-      {showNavbarFooter && showFooter && <Footer />}
-    </div>
-  )
+    // Braces matter: newer browsers return a Promise from scrollTo, which must not be returned to React.
+    window.scrollTo(0, 0)
+  }, [pathname])
+  return null
 }
 
-const App = () => {
-  useEffect(() => {
-    // Apply dark mode based on stored preference or system settings
-    const theme = localStorage.getItem("theme")
-    if (theme === "dark") {
-      document.documentElement.classList.add("dark")
-    } else if (theme === "light") {
-      document.documentElement.classList.remove("dark")
-    } else if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-      document.documentElement.classList.add("dark")
-    } else {
-      document.documentElement.classList.remove("dark")
-    }
-  }, [])
+export default function App() {
   return (
-    <Router>
-      <AppContent />
-    </Router>
+    <BrowserRouter>
+      <ThemeProvider>
+        <ToastProvider>
+          <AuthProvider>
+            <ScrollToTop />
+            <ErrorBoundary>
+            <Suspense fallback={<PageSkeleton />}>
+              <Routes>
+                <Route element={<Layout />}>
+                  <Route index element={<Explore />} />
+                  <Route path="u/:handle" element={<Portfolio />} />
+                  <Route path="u/:handle/:slug" element={<ProjectPage />} />
+                  <Route path="people" element={<People />} />
+                  <Route path="c/:slug" element={<CommunityPage />} />
+                  <Route path="map" element={<MapPage />} />
+                  <Route path="about" element={<About />} />
+                  <Route path="login" element={<Login />} />
+                  <Route
+                    path="dashboard"
+                    element={
+                      <RequireAuth>
+                        <Dashboard />
+                      </RequireAuth>
+                    }
+                  />
+                  <Route
+                    path="settings/profile"
+                    element={
+                      <RequireAuth>
+                        <ProfileSettings />
+                      </RequireAuth>
+                    }
+                  />
+                  {/* Old URLs */}
+                  <Route path="portfolios/:username" element={<LegacyPortfolioRedirect />} />
+                  <Route path="profile" element={<Navigate to="/dashboard" replace />} />
+                  <Route path="profile/edit" element={<Navigate to="/settings/profile" replace />} />
+                  <Route path="*" element={<NotFound />} />
+                </Route>
+              </Routes>
+            </Suspense>
+            </ErrorBoundary>
+          </AuthProvider>
+        </ToastProvider>
+      </ThemeProvider>
+    </BrowserRouter>
   )
 }
-
-export default App

@@ -1,207 +1,132 @@
-import React, { useEffect, useState } from "react"
-import { useNavigate } from "react-router-dom"
-import axios from "axios"
-import { backendURL } from "../../constants"
-import { Box, Modal, IconButton, Container } from "@mui/material"
-import { GitHub, Facebook, Twitter, LinkedIn, Close } from "@mui/icons-material"
-import UserProfile from "./UserProfile"
-import SimpleSelect from "../filters/SimpleSelect"
+import { useMemo, useState } from "react"
+import { Link, useParams } from "react-router-dom"
+import { useTranslation } from "react-i18next"
+import { MapPin, Search, Users } from "lucide-react"
+import config from "../config"
+import api from "../lib/api"
+import { displayName, localizeProfile } from "../lib/content"
+import useApi from "../lib/useApi"
+import useDocumentTitle from "../lib/useDocumentTitle"
+import Avatar from "../components/ui/Avatar"
+import { Badge } from "../components/ui/Chip"
+import { EmptyState, ErrorState, Skeleton } from "../components/ui/Feedback"
 
-export default function People() {
-  const [users, setUsers] = useState([])
-  const [selectedUser, setSelectedUser] = useState(null)
-  const [isUserProfileModalOpen, setIsUserProfileModalOpen] = useState(false)
-  const [searchTerm, setSearchTerm] = useState("")
-  const [selectedCohort, setSelectedCohort] = useState("All")
-  const navigate = useNavigate()
-
-  useEffect(() => {
-    axios
-      .get(`${backendURL}/api/users`)
-      .then((response) => {
-        setUsers(response.data)
-      })
-      .catch((error) => {
-        console.error("There was an error fetching the users!", error)
-      })
-  }, [])
-
-  const handlePortfolioClick = (username) => {
-    navigate(`/portfolios/${username}`)
-  }
-
-  const handleOpenUserProfileModal = (selectedUser) => {
-    if (selectedUser) {
-      setSelectedUser(selectedUser)
-      setIsUserProfileModalOpen(true)
-    }
-  }
-
-  const handleCloseUserProfileModal = () => {
-    setIsUserProfileModalOpen(false)
-    setSelectedUser(null)
-  }
-
-  const filteredUsers = users.filter((user) => {
-    const term = searchTerm.toString().toLowerCase()
-    return (
-      (user.username?.toString().toLowerCase().includes(term) ||
-        user.full_name?.toString().toLowerCase().includes(term) ||
-        user.location?.toString().toLowerCase().includes(term)) &&
-      (selectedCohort === "All" || user.cohort === selectedCohort)
-    )
-  })
-
+export function PersonCard({ person }) {
+  const { t, i18n } = useTranslation()
+  const { headline } = localizeProfile(person, i18n.resolvedLanguage)
   return (
-    <div className="p-2 bg-gray-100 dark:bg-dark-white min-h-screen max-w-[1480px">
-      <div className="max-w-[1480px] mx-auto w-full">
-        <h1 className="text-3xl font-bold mb-6 text-center text-gray-900 dark:text-white">
-          Find a developer
-        </h1>
-
-        <div className="flex justify-center items-center mb-6 gap-3 w-full">
-          <select
-            className="px-4 py-2 h-[40px] border rounded-lg  w-1/3"
-            value={selectedCohort}
-            onChange={(e) => setSelectedCohort(e.target.value)}
-          >
-            <option value="All">All Cohorts</option>
-            {[
-              ...new Set(
-                users.map((user) => user.cohort).filter((cohort) => cohort)
-              ),
-            ].map((cohort) => (
-              <option key={cohort} value={cohort}>
-                {cohort}
-              </option>
-            ))}
-          </select>
-
-          <input
-            type="text"
-            placeholder="Search by username, full name, or location"
-            className="px-4 py-2 h-5 border rounded-lg w-2/3"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
+    <Link
+      to={`/u/${person.handle || person.username}`}
+      className="flex flex-col gap-3 rounded-card border border-border bg-surface p-5 shadow-card transition hover:-translate-y-0.5"
+    >
+      <div className="flex items-center gap-3">
+        <Avatar src={person.avatar} name={displayName(person)} size="md" />
+        <div className="min-w-0">
+          <p className="truncate font-semibold">{displayName(person)}</p>
+          <p className="truncate text-sm text-muted">@{person.username}</p>
         </div>
+      </div>
+      {headline && <p className="line-clamp-2 text-sm text-muted">{headline}</p>}
+      <div className="mt-auto flex flex-wrap items-center gap-2">
+        {person.open_to_work && (
+          <Badge tone="accent" dot className="!px-2 !py-0.5 !text-xs">
+            {t("portfolio.openTo")}
+          </Badge>
+        )}
+        {(person.memberships || []).map((m) => (
+          <Badge key={m.community} className="!px-2 !py-0.5 !text-xs">
+            {[m.community_name, m.label].filter(Boolean).join(" · ")}
+          </Badge>
+        ))}
+        {person.location && (
+          <span className="inline-flex items-center gap-1 text-xs text-muted">
+            <MapPin className="size-3.5" aria-hidden />
+            {person.location}
+          </span>
+        )}
+      </div>
+    </Link>
+  )
+}
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredUsers.map((user) => (
-            <div
-              key={user.id}
-              className="border border-gray-300 dark:border-gray-700 p-4 rounded-lg shadow-md bg-gray-100 dark:bg-gray-800"
-            >
-              <div className="flex items-center mb-4">
-                <img
-                  src={user.avatar || "https://via.placeholder.com/150"}
-                  alt={user.username}
-                  className="w-16 h-16 rounded-full mr-4"
-                />
-                <div>
-                  <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-                    {user.full_name || user.username}
-                  </h2>
-                  <p className="text-gray-700 dark:text-dark-gray-300">
-                    {user.location}
-                  </p>
-                </div>
-              </div>
-              <p className="text-gray-700 dark:text-dark-gray-300 mb-4">
-                {user.bio}
-              </p>
-              <div className="flex w-full justify-between items-center flex-wrap">
-                <div className="flex space-x-4">
-                  {user.github && (
-                    <a
-                      href={`https://github.com/${user.username}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <GitHub className="text-gray-900 dark:text-white" />
-                    </a>
-                  )}
-                  {user.facebook && (
-                    <a
-                      href={user.facebook}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <Facebook className="text-gray-900 dark:text-white" />
-                    </a>
-                  )}
-                  {user.twitter && (
-                    <a
-                      href={user.twitter}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <Twitter className="text-gray-900 dark:text-white" />
-                    </a>
-                  )}
-                  {user.linkedin && (
-                    <a
-                      href={user.linkedin}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <LinkedIn className="text-gray-900 dark:text-white" />
-                    </a>
-                  )}
-                </div>
-                <div className="flex gap-2">
-                  <button
-                    className="bg-blue-500 text-white px-4 py-2 rounded-lg"
-                    onClick={() => handleOpenUserProfileModal(user)}
-                  >
-                    Profile
-                  </button>
-                  <button
-                    className="bg-green-500 text-white px-4 py-2 rounded-lg"
-                    onClick={() => handlePortfolioClick(user.username)}
-                  >
-                    Portfolio
-                  </button>
-                </div>
-              </div>
-            </div>
+function PeopleGrid({ people, loading }) {
+  const { t } = useTranslation()
+  const [query, setQuery] = useState("")
+  const shown = useMemo(() => {
+    const q = query.trim().toLowerCase()
+    return (people || []).filter((p) =>
+      [displayName(p), p.username, p.location, p.headline].join(" ").toLowerCase().includes(q)
+    )
+  }, [people, query])
+  return (
+    <>
+      <label className="flex min-h-11 max-w-md items-center gap-2.5 rounded-full border border-border bg-surface px-4 focus-within:border-accent">
+        <Search className="size-[18px] text-muted" aria-hidden />
+        <span className="sr-only">{t("people.search")}</span>
+        <input
+          type="search"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder={t("people.search")}
+          className="min-w-0 flex-1 bg-transparent outline-none placeholder:text-muted/70"
+        />
+      </label>
+      {loading ? (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {[0, 1, 2, 3, 4, 5].map((i) => (
+            <Skeleton key={i} className="h-40 rounded-card" />
           ))}
         </div>
+      ) : shown.length ? (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {shown.map((p) => (
+            <PersonCard key={p.id} person={p} />
+          ))}
+        </div>
+      ) : (
+        <EmptyState icon={Users} title={t("people.empty")} />
+      )}
+    </>
+  )
+}
 
-        <Modal
-          open={isUserProfileModalOpen}
-          onClose={handleCloseUserProfileModal}
-        >
-          <Container
-            maxWidth="xl"
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
-              alignItems: "center",
-              padding: "16px",
-              borderRadius: "8px",
-              minHeight: `calc(100vh - 60px - 54px)`,
-              boxSizing: "border-box",
-              boxShadow: "24px",
-            }}
-          >
-            <Box
-              sx={{
-                border: `10px solid #9e9e9e`,
-              }}
-            >
-              {selectedUser && (
-                <UserProfile
-                  userProfile={selectedUser}
-                  editable={false}
-                  onCloseClick={handleCloseUserProfileModal}
-                />
-              )}
-            </Box>
-          </Container>
-        </Modal>
+export default function People() {
+  const { t } = useTranslation()
+  useDocumentTitle(`${t("people.title")} · ${config.brandName}`)
+  const { data, error, loading } = useApi(() => api.users(), [])
+  if (error) return <ErrorState error={error} />
+  // Placeholder co-author accounts have no handle; they only appear once they join.
+  const people = (data || []).filter((u) => u.handle)
+  return (
+    <div className="container-page flex flex-col gap-6 py-12">
+      <div className="flex flex-col gap-2">
+        <h1 className="text-4xl font-bold tracking-tight">{t("people.title")}</h1>
+        <p className="text-lg text-muted">{t("people.subtitle")}</p>
       </div>
+      <PeopleGrid people={people} loading={loading} />
+    </div>
+  )
+}
+
+export function CommunityPage() {
+  const { slug } = useParams()
+  const { t } = useTranslation()
+  const { data, error, loading } = useApi(() => api.community(slug), [slug])
+  useDocumentTitle(data ? `${data.name} · ${config.brandName}` : null)
+  if (error) return <ErrorState error={error} />
+  return (
+    <div className="container-page flex flex-col gap-6 py-12">
+      <div className="flex flex-col gap-2">
+        <span className="eyebrow">{t("community.label")}</span>
+        <h1 className="text-4xl font-bold tracking-tight">{loading ? "…" : data.name}</h1>
+        {data?.description && <p className="max-w-2xl text-lg text-muted">{data.description}</p>}
+        {data?.website && (
+          <a href={data.website} className="text-accent hover:underline" target="_blank" rel="noopener noreferrer">
+            {data.website.replace(/^https?:\/\//, "")}
+          </a>
+        )}
+      </div>
+      <PeopleGrid people={data?.members} loading={loading} />
     </div>
   )
 }

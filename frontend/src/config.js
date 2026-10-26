@@ -16,6 +16,8 @@ const config = {
     .replace(/\/$/, ""),
   githubClientId: env.VITE_GITHUB_CLIENT_ID || "",
   brandName: env.VITE_BRAND_NAME || "Showcase",
+  // Optional link to the source code in the footer.
+  sourceUrl: env.VITE_SOURCE_URL || "",
   defaultLang: env.VITE_DEFAULT_LANG || "en",
   langs: list(env.VITE_LANGS, "en,fr,sv"),
   // Login only reads the public profile and email; private repos will use a separate GitHub App.

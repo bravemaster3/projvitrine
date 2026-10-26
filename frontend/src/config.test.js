@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 import config from "./config"
-import { fetchAllCountries } from "../constants"
+import countries from "./data/countries.json"
 
 describe("config", () => {
   it("has defaults when no VITE_* variables are set", () => {
@@ -12,10 +12,9 @@ describe("config", () => {
 })
 
 describe("countries", () => {
-  it("are bundled with coordinates for the locations used on the map", async () => {
-    const countries = await fetchAllCountries()
+  it("are bundled with coordinates for the locations used on the map", () => {
     for (const name of ["Egypt", "Ghana", "Kenya", "Malawi", "Morocco", "Nigeria", "South Africa", "Sweden", "Togo"]) {
-      expect(countries[name].latlng).toHaveLength(2)
+      expect(countries[name]).toHaveLength(2)
     }
   })
 })

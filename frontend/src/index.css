@@ -1,3 +1,85 @@
+@import "@fontsource-variable/inter";
+@import "@fontsource/jetbrains-mono/400.css";
+@import "@fontsource/jetbrains-mono/500.css";
+@import "./styles/theme.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  html {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+  body {
+    min-height: 100vh;
+  }
+  :focus-visible {
+    outline: 2px solid var(--brand);
+    outline-offset: 2px;
+  }
+  ::selection {
+    background: var(--accent-soft);
+  }
+}
+
+@layer components {
+  .container-page {
+    @apply mx-auto w-full max-w-6xl px-4 sm:px-6;
+  }
+  .eyebrow {
+    @apply font-mono text-xs uppercase tracking-[0.06em] text-accent;
+  }
+  .prose-case {
+    @apply text-muted leading-relaxed;
+  }
+  .prose-case :where(h2, h3) {
+    @apply mt-8 mb-3 font-semibold text-text tracking-tight;
+  }
+  .prose-case h2 { @apply text-2xl; }
+  .prose-case h3 { @apply text-xl; }
+  .prose-case p { @apply my-4; }
+  .prose-case a { @apply text-accent underline underline-offset-2; }
+  .prose-case :where(ul, ol) { @apply my-4 pl-6; }
+  .prose-case ul { @apply list-disc; }
+  .prose-case ol { @apply list-decimal; }
+  .prose-case code { @apply rounded bg-chip px-1 py-0.5 font-mono text-[0.9em] text-text; }
+  .prose-case pre { @apply my-4 overflow-x-auto rounded-control bg-[var(--code-bg)] p-4 text-sm text-[var(--code-text)]; }
+  .prose-case pre code { @apply bg-transparent p-0 text-inherit; }
+  .prose-case img { @apply my-4 rounded-card border border-border; }
+  .prose-case blockquote { @apply my-4 border-l-2 border-accent-border pl-4 italic; }
+}
+
+/* Printing a portfolio gives a clean one-pager. */
+@media print {
+  :root { --bg: #fff; --surface: #fff; }
+  .no-print { display: none !important; }
+  a[data-print-url]::after { content: " (" attr(href) ")"; font-size: 0.8em; color: var(--muted); }
+  article, section { break-inside: avoid; }
+}
+
+/* Leaflet marker clusters in the theme colors. */
+.marker-cluster-small,
+.marker-cluster-medium,
+.marker-cluster-large {
+  background-color: var(--accent-border) !important;
+}
+.marker-cluster-small div,
+.marker-cluster-medium div,
+.marker-cluster-large div {
+  background-color: var(--brand) !important;
+  color: var(--on-accent) !important;
+  font-family: var(--font-sans);
+  font-weight: 600;
+}
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
+  background: var(--surface);
+  color: var(--text);
+}
+.leaflet-popup-content a {
+  color: var(--brand);
+}

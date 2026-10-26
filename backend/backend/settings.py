@@ -54,6 +54,11 @@ SITE_URL = (
     env_str("SITE_URL") or env_str("SITE_DOMAIN") or env_str("VITE_FRONTEND_URL") or "http://localhost:5173"
 ).rstrip("/")
 
+# Product name used in link previews (same variable as the frontend build).
+BRAND_NAME = env_str("VITE_BRAND_NAME", env_str("BRAND_NAME", "Showcase"))
+# Where Django fetches the built index.html to add link-preview tags for /u/* pages.
+INDEX_HTML_URL = env_str("INDEX_HTML_URL", "http://web:8080/index.html")
+
 # Languages content can be written and translated in (first = default).
 LANGS = env_list("LANGS", env_list("VITE_LANGS", ["en", "fr", "sv"]))
 DEFAULT_LANG = env_str("DEFAULT_LANG", env_str("VITE_DEFAULT_LANG", LANGS[0]))
@@ -149,7 +154,7 @@ USE_TZ = True
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "static"
 MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "media"
+MEDIA_ROOT = env_str("MEDIA_ROOT") or BASE_DIR / "media"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
